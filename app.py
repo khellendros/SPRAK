@@ -59,21 +59,25 @@ def nmap_scan(hosts):
 
             service_name = "NULL"
             version = "NULL"
-            
+
             for service in port.iter(tag="service"):
                 if 'name' in service.attrib.keys():
                     service_name = service.attrib['name']
                 if 'version' in service.attrib.keys():
                     version = service.attrib['version']
+                if 'product' in service.attrib.keys():
+                    product = service.attrib['product']
+                if 'extrainfo' in service.attrib.keys():
+                    extrainfo = service.attrib['extrainfo']
 
             c = conn.execute("SELECT * FROM nmap_ports WHERE port_number=? AND protocol=?;", (port_number, protocol))
             
             if c.fetchone() is None:
-                conn.execute("INSERT INTO nmap_ports (nmap_id, port_number, protocol, service, service_fingerprint) VALUES (?, ?, ?, ?, ?);", 
-                            (nmap_id, port_number, protocol, service_name, version))
+                conn.execute("INSERT INTO nmap_ports (nmap_id, port_number, protocol, service, service_fingerprint, product, extrainfo) VALUES (?, ?, ?, ?, ?);", 
+                            (nmap_id, port_number, protocol, service_name, version, product, extrainfo))
             else: 
-                conn.execute("UPDATE nmap_ports SET service = ?, service_fingerprint = ? WHERE nmap_id=? AND port=? AND protocol=?;", 
-                            (service_name, version, port_number, protocol))
+                conn.execute("UPDATE nmap_ports SET service = ?, service_fingerprint = ?, product = ?, extrainfo = ? WHERE nmap_id=? AND port=? AND protocol=?;", 
+                            (service_name, version, product, extrainfo, port_number, protocol))
 
         conn.commit()
 
