@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nmaprun>
 <?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
-<!-- Nmap 7.80 scan initiated Mon Aug 24 10:37:26 2020 as: nmap -sT -sU -A -p 902 -oA logs/192.168.1.12 192.168.1.12 -->
-<nmaprun scanner="nmap" args="nmap -sT -sU -A -p 902 -oA logs/192.168.1.12 192.168.1.12" start="1598279846" startstr="Mon Aug 24 10:37:26 2020" version="7.80" xmloutputversion="1.04">
-<scaninfo type="connect" protocol="tcp" numservices="1" services="902"/>
-<scaninfo type="udp" protocol="udp" numservices="1" services="902"/>
+<!-- Nmap 7.80 scan initiated Mon Aug 24 12:59:34 2020 as: nmap -sS -sU -A -p 902,43747 -oA logs/192.168.1.12 192.168.1.12 -->
+<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 902,43747 -oA logs/192.168.1.12 192.168.1.12" start="1598288374" startstr="Mon Aug 24 12:59:34 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="2" services="902,43747"/>
+<scaninfo type="udp" protocol="udp" numservices="2" services="902,43747"/>
 <verbose level="0"/>
 <debugging level="0"/>
-<host starttime="1598279847" endtime="1598279910"><status state="up" reason="localhost-response" reason_ttl="0"/>
+<host starttime="1598288374" endtime="1598288472"><status state="up" reason="localhost-response" reason_ttl="0"/>
 <address addr="192.168.1.12" addrtype="ipv4"/>
 <hostnames>
 </hostnames>
-<ports><port protocol="tcp" portid="902"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="vmware-auth" product="VMware Authentication Daemon" version="1.10" extrainfo="Uses VNC, SOAP" tunnel="ssl" method="probed" conf="10"/></port>
+<ports><port protocol="tcp" portid="902"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="vmware-auth" product="VMware Authentication Daemon" version="1.10" extrainfo="Uses VNC, SOAP" tunnel="ssl" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="43747"><state state="closed" reason="reset" reason_ttl="64"/></port>
 <port protocol="udp" portid="902"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="ideafarm-door" method="table" conf="3"/></port>
+<port protocol="udp" portid="43747"><state state="open|filtered" reason="no-response" reason_ttl="0"/></port>
 </ports>
 <os><portused state="open" proto="tcp" portid="902"/>
+<portused state="closed" proto="tcp" portid="43747"/>
 <portused state="closed" proto="udp" portid="902"/>
 <osmatch name="Linux 2.6.32" accuracy="96" line="55543">
 <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="96"><cpe>cpe:/o:linux:linux_kernel:2.6.32</cpe></osclass>
@@ -39,6 +42,9 @@
 <osmatch name="Linux 3.10" accuracy="93" line="63075">
 <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3.10</cpe></osclass>
 </osmatch>
+<osmatch name="Linux 3.8 - 3.9" accuracy="93" line="66119">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
+</osmatch>
 <osmatch name="Linux 3.7 - 3.10" accuracy="93" line="65736">
 <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
 </osmatch>
@@ -46,17 +52,15 @@
 <osclass type="WAP" vendor="Asus" osfamily="embedded" accuracy="93"><cpe>cpe:/h:asus:rt-n56u</cpe></osclass>
 <osclass type="WAP" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3.4</cpe></osclass>
 </osmatch>
-<osmatch name="Linux 3.16" accuracy="93" line="63962">
-<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3.16</cpe></osclass>
-</osmatch>
+<osfingerprint fingerprint="OS:SCAN(V=7.80%E=4%D=8/24%OT=902%CT=43747%CU=902%PV=Y%DS=0%DC=L%G=Y%TM=5F43&#xa;OS:F258%P=x86_64-pc-linux-gnu)SEQ(SP=103%GCD=1%ISR=110%TI=Z%CI=Z%II=I%TS=A)&#xa;OS:OPS(O1=MFFD7ST11NWA%O2=MFFD7ST11NWA%O3=MFFD7NNT11NWA%O4=MFFD7ST11NWA%O5=&#xa;OS:MFFD7ST11NWA%O6=MFFD7ST11)WIN(W1=FFCB%W2=FFCB%W3=FFCB%W4=FFCB%W5=FFCB%W6&#xa;OS:=FFCB)ECN(R=Y%DF=Y%T=40%W=FFD7%O=MFFD7NNSNWA%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=&#xa;OS:O%A=S+%F=AS%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD&#xa;OS:=0%Q=)T5(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0&#xa;OS:%S=A%A=Z%F=R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1&#xa;OS:(R=Y%DF=N%T=40%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI&#xa;OS:=N%T=40%CD=S)&#xa;"/>
 </os>
-<uptime seconds="1179992" lastboot="Mon Aug 10 18:51:58 2020"/>
+<uptime seconds="1188554" lastboot="Mon Aug 10 18:51:58 2020"/>
 <distance value="0"/>
-<tcpsequence index="264" difficulty="Good luck!" values="EE093213,69AE8E3F,7D99C35F,22DBDDBB,9C689CB6,B511961F"/>
+<tcpsequence index="259" difficulty="Good luck!" values="CB268850,987F830B,1F3D83F0,D36289D3,55953697,CCBBA724"/>
 <ipidsequence class="All zeros" values="0,0,0,0,0,0"/>
-<tcptssequence class="1000HZ" values="46545492,465454F6,4654555B,465455BF,46545623,46545687"/>
-<times srtt="65" rttvar="3" to="100000"/>
+<tcptssequence class="1000HZ" values="46D6F953,46D6F9B7,46D6FA1B,46D6FA7F,46D6FAE4,46D6FB48"/>
+<times srtt="26" rttvar="3" to="100000"/>
 </host>
-<runstats><finished time="1598279910" timestr="Mon Aug 24 10:38:30 2020" elapsed="64.12" summary="Nmap done at Mon Aug 24 10:38:30 2020; 1 IP address (1 host up) scanned in 64.12 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+<runstats><finished time="1598288472" timestr="Mon Aug 24 13:01:12 2020" elapsed="98.41" summary="Nmap done at Mon Aug 24 13:01:12 2020; 1 IP address (1 host up) scanned in 98.41 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
 </runstats>
 </nmaprun>
