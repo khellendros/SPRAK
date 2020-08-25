@@ -5,6 +5,8 @@ import xml.etree.ElementTree as ET
 # TODO: Make and implement design decision for hostnames vs. ip addresses
 #       Fix DB locking on concurrent writes
 #       Implement secure coding practices.  Do we deploy this inside a container?  Nmap has to run as root for -sS
+#       Enumeration for scripts ran - <script id= output= >
+#       Enumeration for state - <state state= >
 
 def nmap_scan(hosts):
 
@@ -12,7 +14,7 @@ def nmap_scan(hosts):
 
     #fast UDP and TCP scan for open ports
     for host in hosts:
-        nmap_cmd = ["nmap", "-sS", "-sU", "-T4", "-p", "-", "-oA", "logs/" + host, host]    
+        nmap_cmd = ["nmap", "-sS", "-sU", "-T4", "-p", "-", "-oA", "static/logs/" + host, host]    
         subprocess.run(nmap_cmd)
 
         xmltree = ET.parse("logs/" + host + ".xml")
@@ -27,7 +29,7 @@ def nmap_scan(hosts):
         portarg = ",".join(openports)
         
         if len(openports) > 0:
-            nmap_cmd = ["nmap", "-sS", "-sU", "-A", "-p", portarg, "-oA", "logs/" + host, host]
+            nmap_cmd = ["nmap", "-sS", "-sU", "-A", "-p", portarg, "-oA", "static/logs/" + host, host]
             subprocess.run(nmap_cmd)
 
         ### parse xml and insert into database ###
