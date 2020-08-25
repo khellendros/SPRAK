@@ -17,7 +17,7 @@ def nmap_scan(hosts):
         nmap_cmd = ["nmap", "-sS", "-sU", "-T4", "-p", "-", "-oA", "static/logs/" + host, host]    
         subprocess.run(nmap_cmd)
 
-        xmltree = ET.parse("logs/" + host + ".xml")
+        xmltree = ET.parse("static/logs/" + host + ".xml")
         xmlroot = xmltree.getroot()
 
         openports = []
@@ -33,7 +33,7 @@ def nmap_scan(hosts):
             subprocess.run(nmap_cmd)
 
         ### parse xml and insert into database ###
-        xmltree = ET.parse("logs/" + host + ".xml")
+        xmltree = ET.parse("static/logs/" + host + ".xml")
         xmlroot = xmltree.getroot()
 
         os_fingerprints = []
@@ -73,6 +73,7 @@ def nmap_scan(hosts):
             version = "NULL"
             product = "NULL"
             extrainfo = "NULL"
+            state = "NULL"
 
             for service in port.iter(tag="service"):
                 if 'name' in service.attrib.keys():
@@ -83,6 +84,10 @@ def nmap_scan(hosts):
                     product = service.attrib['product']
                 if 'extrainfo' in service.attrib.keys():
                     extrainfo = service.attrib['extrainfo']
+            
+            for state in port.iter(tag="state"):
+                if 'state' in state.attrib.keys():
+                    state = state.attrib['state']
 
             c = conn.execute("SELECT * FROM nmap_ports WHERE port_number=? AND protocol=?;", (port_number, protocol))
             
