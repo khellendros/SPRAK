@@ -1,3 +1,7 @@
-<nmaprun><runstats><finished time="1598278803" timestr="Mon Aug 24 10:20:03 2020" elapsed="0.16" summary="Nmap done at Mon Aug 24 10:20:03 2020; 0 IP addresses (0 hosts up) scanned in 0.16 seconds" exit="error" errormsg="Error #485: Your port specifications are illegal.  Example of proper form: &quot;-100,200-1024,T:3000-4000,U:60000-&quot;"/><hosts up="0" down="0" total="0"/>
-</runstats>
-</nmaprun>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.80 scan initiated Mon Aug 24 15:50:48 2020 as: nmap -sS -sU -T4 -p - -oA logs/192.168.1.1 192.168.1.1 -->
+<nmaprun scanner="nmap" args="nmap -sS -sU -T4 -p - -oA logs/192.168.1.1 192.168.1.1" start="1598298648" startstr="Mon Aug 24 15:50:48 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>
+<scaninfo type="udp" protocol="udp" numservices="65535" services="1-65535"/>

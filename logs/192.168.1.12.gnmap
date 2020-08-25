@@ -1,4 +1,4 @@
-# Nmap 7.80 scan initiated Mon Aug 24 12:59:34 2020 as: nmap -sS -sU -A -p 902,43747 -oA logs/192.168.1.12 192.168.1.12
+# Nmap 7.80 scan initiated Mon Aug 24 21:03:04 2020 as: nmap -sS -sU -A -p 902 -oA logs/192.168.1.12 192.168.1.12
 Host: 192.168.1.12 ()	Status: Up
-Host: 192.168.1.12 ()	Ports: 902/open/tcp//ssl|vmware-auth//VMware Authentication Daemon 1.10 (Uses VNC, SOAP)/, 43747/closed/tcp/////, 902/closed/udp//ideafarm-door///, 43747/open|filtered/udp/////	Seq Index: 259	IP ID Seq: All zeros
-# Nmap done at Mon Aug 24 13:01:12 2020 -- 1 IP address (1 host up) scanned in 98.41 seconds
+Host: 192.168.1.12 ()	Ports: 902/open/tcp//ssl|vmware-auth//VMware Authentication Daemon 1.10 (Uses VNC, SOAP)/, 902/closed/udp//ideafarm-door///	Seq Index: 261	IP ID Seq: All zeros
+# Nmap done at Mon Aug 24 21:04:08 2020 -- 1 IP address (1 host up) scanned in 64.56 seconds

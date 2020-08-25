@@ -26,31 +26,33 @@ def nmap_scan(hosts):
         xmltree = ET.parse("logs/" + host + ".xml")
         xmlroot = xmltree.getroot()
 
-        osfingerprints = []
+        os_fingerprints = []
 
         for osmatch in xmlroot.iter('osmatch'):          #parse os match element and accuracy attribute
-            osfingerprints.append(osmatch.attrib['name'] + " Accuracy: " + osmatch.attrib['accuracy'])
+            os_fingerprints.append(osmatch.attrib['name'] + " Accuracy: " + osmatch.attrib['accuracy'])
 
-        osfingerprint = "\n".join(osfingerprints)
+        os_fingerprint = "\n".join(os_fingerprints)
 
-        c = conn.execute("SELECT * FROM hosts WHERE ip_address=?;", (host,))  #check for existing host in database
+        c = conn.execute("SELECT id FROM hosts WHERE ip_address=?;", (host,))  #check for existing host in database
+        row = c.fetchone()
 
-        # if host doesn't exist, insert into database along with nmap scan and fingerprint
-        if c.fetchone() is None:
+        # if host doesn't exist, insert into hosts table along with nmap scan and fingerprint
+        if row is None:
             conn.execute("INSERT INTO hosts (ip_address) VALUES (?);", (host,))
             c = conn.execute("SELECT id FROM hosts WHERE ip_address=?;", (host,))   #grab new host primary key
         
             host_id = c.fetchone()[0]
 
-            conn.execute("INSERT INTO nmap (host_id, osfingerprint) VALUES (?, ?);", (host_id, osfingerprint))
+            #insert new scan into nmap table or else update existing nmap scan in nmap table
+            conn.execute("INSERT INTO nmap (host_id, os_fingerprint, timestamp) VALUES (?, ?, datetime('now'));", (host_id, os_fingerprint))
         else:
-            host_id = c.fetchone()[0]
-            conn.execute("UPDATE nmap SET osfingerprint = ? WHERE host_id=?;", (osfingerprint, host_id))
+            host_id = row[0]
+            conn.execute("UPDATE nmap SET os_fingerprint = ?, timestamp = datetime('now') WHERE host_id=?;", (os_fingerprint, host_id))
 
         c = conn.execute("SELECT id FROM nmap WHERE host_id=?;", (host_id,))  #grab nmap table primary key to use on nmap_ports table
         nmap_id = c.fetchone()[0]
 
-        # iterate over all port and service elements in nmap xml file and add ports if they don't exist for 
+        # iterate over all port and service elements in nmap xml file and add ports to nmap_ports table if they don't exist for 
         # new scan and update existing service fingerprints
 
         for port in xmlroot.iter('port'):
@@ -73,17 +75,15 @@ def nmap_scan(hosts):
             c = conn.execute("SELECT * FROM nmap_ports WHERE port_number=? AND protocol=?;", (port_number, protocol))
             
             if c.fetchone() is None:
-                conn.execute("INSERT INTO nmap_ports (nmap_id, port_number, protocol, service, service_fingerprint, product, extrainfo) VALUES (?, ?, ?, ?, ?);", 
+                conn.execute("INSERT INTO nmap_ports (nmap_id, port_number, protocol, service, service_fingerprint, product, extrainfo) VALUES (?, ?, ?, ?, ?, ?, ?);", 
                             (nmap_id, port_number, protocol, service_name, version, product, extrainfo))
             else: 
-                conn.execute("UPDATE nmap_ports SET service = ?, service_fingerprint = ?, product = ?, extrainfo = ? WHERE nmap_id=? AND port=? AND protocol=?;", 
-                            (service_name, version, product, extrainfo, port_number, protocol))
+                conn.execute("UPDATE nmap_ports SET service = ?, service_fingerprint = ?, product = ?, extrainfo = ? WHERE nmap_id=? AND port_number=? AND protocol=?;", 
+                            (service_name, version, product, extrainfo, nmap_id, port_number, protocol))
 
         conn.commit()
 
     conn.close()
-
-
 
 app = Flask(__name__)
 
@@ -92,7 +92,7 @@ def index():
     return render_template("index.html")
 
 @app.route("/nmapscan")
-def scan():
+def nmapscan():
     hostsarg = request.args.get("hosts")
     hosts = hostsarg.split(",")
     print(f"Received Hosts: {hosts}")
@@ -100,3 +100,7 @@ def scan():
     nmap_scan(hosts)
 
     return "Scan Complete!"
+
+@app.route("/hostlogs")
+def hostlogs():
+    return render_template("hostlogs.html")

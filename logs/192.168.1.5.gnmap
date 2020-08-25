@@ -1,0 +1,4 @@
+# Nmap 7.80 scan initiated Mon Aug 24 16:05:49 2020 as: nmap -sS -sU -A -p 8060,33961 -oA logs/192.168.1.5 192.168.1.5
+Host: 192.168.1.5 ()	Status: Up
+Host: 192.168.1.5 ()	Ports: 8060/open/tcp//upnp//MiniUPnP 1.4 (Roku; UPnP 1.0)/, 33961/open/tcp//unknown///, 8060/open|filtered/udp/////, 33961/open|filtered/udp/////	OS: Linux 3.2 - 3.8	Seq Index: 254	IP ID Seq: All zeros
+# Nmap done at Mon Aug 24 16:09:13 2020 -- 1 IP address (1 host up) scanned in 204.35 seconds

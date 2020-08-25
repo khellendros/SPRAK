@@ -1,26 +1,14 @@
-# Nmap 7.80 scan initiated Mon Aug 24 12:59:34 2020 as: nmap -sS -sU -A -p 902,43747 -oA logs/192.168.1.12 192.168.1.12
+# Nmap 7.80 scan initiated Mon Aug 24 21:03:04 2020 as: nmap -sS -sU -A -p 902 -oA logs/192.168.1.12 192.168.1.12
 Nmap scan report for 192.168.1.12
-Host is up (0.000026s latency).
+Host is up (0.000038s latency).
 
-PORT      STATE         SERVICE         VERSION
-902/tcp   open          ssl/vmware-auth VMware Authentication Daemon 1.10 (Uses VNC, SOAP)
-43747/tcp closed        unknown
-902/udp   closed        ideafarm-door
-43747/udp open|filtered unknown
-No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
-TCP/IP fingerprint:
-OS:SCAN(V=7.80%E=4%D=8/24%OT=902%CT=43747%CU=902%PV=Y%DS=0%DC=L%G=Y%TM=5F43
-OS:F258%P=x86_64-pc-linux-gnu)SEQ(SP=103%GCD=1%ISR=110%TI=Z%CI=Z%II=I%TS=A)
-OS:OPS(O1=MFFD7ST11NWA%O2=MFFD7ST11NWA%O3=MFFD7NNT11NWA%O4=MFFD7ST11NWA%O5=
-OS:MFFD7ST11NWA%O6=MFFD7ST11)WIN(W1=FFCB%W2=FFCB%W3=FFCB%W4=FFCB%W5=FFCB%W6
-OS:=FFCB)ECN(R=Y%DF=Y%T=40%W=FFD7%O=MFFD7NNSNWA%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=
-OS:O%A=S+%F=AS%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD
-OS:=0%Q=)T5(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0
-OS:%S=A%A=Z%F=R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1
-OS:(R=Y%DF=N%T=40%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI
-OS:=N%T=40%CD=S)
-
+PORT    STATE  SERVICE         VERSION
+902/tcp open   ssl/vmware-auth VMware Authentication Daemon 1.10 (Uses VNC, SOAP)
+902/udp closed ideafarm-door
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Aggressive OS guesses: Linux 2.6.32 (96%), Linux 3.8 - 4.14 (95%), Linux 3.1 (95%), Linux 3.2 (95%), AXIS 210A or 211 Network Camera (Linux 2.6.17) (94%), Linux 3.7 - 3.11 (93%), Linux 3.10 (93%), Linux 3.8 - 3.9 (93%), Linux 3.7 - 3.10 (93%), ASUS RT-N56U WAP (Linux 3.4) (93%)
+No exact OS matches for host (test conditions non-ideal).
 Network Distance: 0 hops
 
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-# Nmap done at Mon Aug 24 13:01:12 2020 -- 1 IP address (1 host up) scanned in 98.41 seconds
+# Nmap done at Mon Aug 24 21:04:08 2020 -- 1 IP address (1 host up) scanned in 64.56 seconds
