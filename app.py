@@ -87,10 +87,10 @@ def nmap_scan(hosts):
             c = conn.execute("SELECT * FROM nmap_ports WHERE port_number=? AND protocol=?;", (port_number, protocol))
             
             if c.fetchone() is None:
-                conn.execute("INSERT INTO nmap_ports (nmap_id, port_number, protocol, service, service_fingerprint, product, extrainfo) VALUES (?, ?, ?, ?, ?, ?, ?);", 
+                conn.execute("INSERT INTO nmap_ports (nmap_id, port_number, protocol, service, version, product, extrainfo) VALUES (?, ?, ?, ?, ?, ?, ?);", 
                             (nmap_id, port_number, protocol, service_name, version, product, extrainfo))
             else: 
-                conn.execute("UPDATE nmap_ports SET service = ?, service_fingerprint = ?, product = ?, extrainfo = ? WHERE nmap_id=? AND port_number=? AND protocol=?;", 
+                conn.execute("UPDATE nmap_ports SET service = ?, version = ?, product = ?, extrainfo = ? WHERE nmap_id=? AND port_number=? AND protocol=?;", 
                             (service_name, version, product, extrainfo, nmap_id, port_number, protocol))
 
         conn.commit()
@@ -151,7 +151,7 @@ def log():
     scanenum = sql_query("SELECT timestamp, os_fingerprint FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
                          WHERE ip_address = ?", (host,))
     
-    portenum = sql_query("SELECT port_number, protocol, service, service_fingerprint, product, \
+    portenum = sql_query("SELECT port_number, protocol, service, version, product, \
                         extrainfo FROM hosts JOIN nmap ON hosts.id = nmap.host_id JOIN nmap_ports ON \
                         nmap.id = nmap_ports.nmap_id WHERE ip_address = ? ORDER BY port_number;", (host,))
 
