@@ -2,4 +2,11 @@
 
 {% block body %}
     <h1>Host Logs</h1>
+    <table class="table table-dark">
+        {% for host in hostlist %}
+            {% for elem in host %}
+                <tr><td><a href="log?h={{ elem }}">{{ elem }}</a></td></tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
 {% endblock %}

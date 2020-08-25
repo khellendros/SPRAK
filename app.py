@@ -2,8 +2,14 @@ from flask import Flask, render_template, request
 import sqlite3, subprocess
 import xml.etree.ElementTree as ET
 
+# TODO: Make and implement design decision for hostnames vs. ip addresses
+#       Fix DB locking on concurrent writes
+#       Implement secure coding practices.  Do we deploy this inside a container?  Nmap has to run as root for -sS
+
 def nmap_scan(hosts):
+
     conn = sqlite3.connect('SPRAK.db')
+
     #fast UDP and TCP scan for open ports
     for host in hosts:
         nmap_cmd = ["nmap", "-sS", "-sU", "-T4", "-p", "-", "-oA", "logs/" + host, host]    
@@ -19,8 +25,10 @@ def nmap_scan(hosts):
             openports.append(port.attrib['portid'])
 
         portarg = ",".join(openports)
-        nmap_cmd = ["nmap", "-sS", "-sU", "-A", "-p", portarg, "-oA", "logs/" + host, host]
-        subprocess.run(nmap_cmd)
+        
+        if portarg is not None:
+            nmap_cmd = ["nmap", "-sS", "-sU", "-A", "-p", portarg, "-oA", "logs/" + host, host]
+            subprocess.run(nmap_cmd)
 
         ### parse xml and insert into database ###
         xmltree = ET.parse("logs/" + host + ".xml")
@@ -85,14 +93,29 @@ def nmap_scan(hosts):
 
     conn.close()
 
+def get_hosts():
+
+    conn = sqlite3.connect('SPRAK.db')
+    c = conn.execute("SELECT ip_address FROM hosts;")
+    iplist = c.fetchall()
+    conn.commit()
+    conn.close()
+    return iplist
+
+def get_nmap_log(host):
+
+    return host;
+
 app = Flask(__name__)
 
 @app.route("/")
 def index():
+
     return render_template("index.html")
 
 @app.route("/nmapscan")
 def nmapscan():
+
     hostsarg = request.args.get("hosts")
     hosts = hostsarg.split(",")
     print(f"Received Hosts: {hosts}")
@@ -103,4 +126,14 @@ def nmapscan():
 
 @app.route("/hostlogs")
 def hostlogs():
-    return render_template("hostlogs.html")
+
+    dbhosts = get_hosts()
+
+    return render_template("hostlogs.html", hostlist=dbhosts)
+
+@app.route("/log")
+def log():
+
+    host = request.args.get("h")
+    nmapenum = get_nmap_log(host)
+    return render_template("log.html", enum=nmapenum)
