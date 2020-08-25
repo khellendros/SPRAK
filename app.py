@@ -69,6 +69,8 @@ def nmap_scan(hosts):
 
             service_name = "NULL"
             version = "NULL"
+            product = "NULL"
+            extrainfo = "NULL"
 
             for service in port.iter(tag="service"):
                 if 'name' in service.attrib.keys():
