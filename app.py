@@ -26,7 +26,7 @@ def nmap_scan(hosts):
 
         portarg = ",".join(openports)
         
-        if portarg is not None:
+        if len(openports) > 0:
             nmap_cmd = ["nmap", "-sS", "-sU", "-A", "-p", portarg, "-oA", "logs/" + host, host]
             subprocess.run(nmap_cmd)
 
@@ -102,9 +102,17 @@ def get_hosts():
     conn.close()
     return iplist
 
-def get_nmap_log(host):
+def sql_query(query, args):
 
-    return host;
+    conn = sqlite3.connect('SPRAK.db')
+    c = conn.execute(query, args)
+
+    results = c.fetchall()
+
+    conn.commit()
+    conn.close()
+
+    return results
 
 app = Flask(__name__)
 
@@ -135,5 +143,17 @@ def hostlogs():
 def log():
 
     host = request.args.get("h")
-    nmapenum = get_nmap_log(host)
-    return render_template("log.html", enum=nmapenum)
+
+    scanenum = sql_query("SELECT timestamp, os_fingerprint FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
+                         WHERE ip_address = ?", (host,))
+    
+    portenum = sql_query("SELECT port_number, protocol, service, service_fingerprint, product, \
+                        extrainfo FROM hosts JOIN nmap ON hosts.id = nmap.host_id JOIN nmap_ports ON \
+                        nmap.id = nmap_ports.nmap_id WHERE ip_address = ? ORDER BY port_number;", (host,))
+
+    timestamp = scanenum[0][0]
+    os_fingerprints = scanenum[0][1]
+
+
+    return render_template("log.html", ip_address=host, lastscan=timestamp, \
+                           osmatches=os_fingerprints.replace("\n", "  |  "), ports=portenum)

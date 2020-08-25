@@ -1,2 +1,39 @@
-Error #485: Your port specifications are illegal.  Example of proper form: "-100,200-1024,T:3000-4000,U:60000-"
-QUITTING!
+# Nmap 7.80 scan initiated Tue Aug 25 09:20:56 2020 as: nmap -sS -sU -A -p 8060,35566 -oA logs/192.168.1.4 192.168.1.4
+Nmap scan report for 192.168.1.4
+Host is up (0.033s latency).
+
+PORT      STATE         SERVICE VERSION
+8060/tcp  open          upnp    MiniUPnP 1.4 (Roku; UPnP 1.0)
+35566/tcp open          unknown
+| fingerprint-strings: 
+|   FourOhFourRequest, GetRequest, HTTPOptions, RTSPRequest, SIPOptions: 
+|     HTTP/1.1 404 Not Found
+|     Connection: close
+|_    Content-Length: 0
+8060/udp  open|filtered unknown
+35566/udp open|filtered unknown
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port35566-TCP:V=7.80%I=7%D=8/25%Time=5F45104B%P=x86_64-pc-linux-gnu%r(G
+SF:etRequest,40,"HTTP/1\.1\x20404\x20Not\x20Found\r\nConnection:\x20close\
+SF:r\nContent-Length:\x200\r\n\r\n")%r(HTTPOptions,40,"HTTP/1\.1\x20404\x2
+SF:0Not\x20Found\r\nConnection:\x20close\r\nContent-Length:\x200\r\n\r\n")
+SF:%r(RTSPRequest,40,"HTTP/1\.1\x20404\x20Not\x20Found\r\nConnection:\x20c
+SF:lose\r\nContent-Length:\x200\r\n\r\n")%r(FourOhFourRequest,40,"HTTP/1\.
+SF:1\x20404\x20Not\x20Found\r\nConnection:\x20close\r\nContent-Length:\x20
+SF:0\r\n\r\n")%r(SIPOptions,40,"HTTP/1\.1\x20404\x20Not\x20Found\r\nConnec
+SF:tion:\x20close\r\nContent-Length:\x200\r\n\r\n");
+MAC Address: B0:A7:37:AE:58:6F (Roku)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose
+Running: Linux 3.X
+OS CPE: cpe:/o:linux:linux_kernel:3
+OS details: Linux 3.2 - 3.8
+Network Distance: 1 hop
+Service Info: Device: media device
+
+TRACEROUTE
+HOP RTT      ADDRESS
+1   32.90 ms 192.168.1.4
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Tue Aug 25 09:24:21 2020 -- 1 IP address (1 host up) scanned in 204.59 seconds

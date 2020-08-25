@@ -1,5 +1,31 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    
+<table class="table table-dark">
+    <tr>
+        <th colspan="3">HOST</th>
+        <th colspan="3">LAST SCAN</th>
+    </tr>
+    <tr><td colspan="3">{{ ip_address }}</td><td colspan="3">{{ lastscan }}</td></tr>
+    <tr>
+        <th colspan="6">OS MATCHES</th>
+    </tr>
+    <tr><td colspan="6">{{ osmatches }}</td></tr>
+    <tr>
+        <th>PORT</th>
+        <th>PROTOCOL</th>
+        <th>SERVICE</th>
+        <th>VERSION</th>
+        <th>PRODUCT</th>
+        <th>INFO</th>
+    </tr>
+    {% for row in ports %}
+        <tr>
+        {% for elem in row %}
+            <td>{{ elem }}</td>
+        {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+<a href="hostlogs">Back to Host Logs</a>
 {% endblock %}

@@ -1,3 +1,38 @@
-<nmaprun><runstats><finished time="1598358650" timestr="Tue Aug 25 08:30:50 2020" elapsed="0.18" summary="Nmap done at Tue Aug 25 08:30:50 2020; 0 IP addresses (0 hosts up) scanned in 0.18 seconds" exit="error" errormsg="Error #485: Your port specifications are illegal.  Example of proper form: &quot;-100,200-1024,T:3000-4000,U:60000-&quot;"/><hosts up="0" down="0" total="0"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.80 scan initiated Tue Aug 25 09:20:56 2020 as: nmap -sS -sU -A -p 8060,35566 -oA logs/192.168.1.4 192.168.1.4 -->
+<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 8060,35566 -oA logs/192.168.1.4 192.168.1.4" start="1598361656" startstr="Tue Aug 25 09:20:56 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="2" services="8060,35566"/>
+<scaninfo type="udp" protocol="udp" numservices="2" services="8060,35566"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1598361656" endtime="1598361860"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.1.4" addrtype="ipv4"/>
+<address addr="B0:A7:37:AE:58:6F" addrtype="mac" vendor="Roku"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="tcp" portid="8060"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="upnp" product="MiniUPnP" version="1.4" extrainfo="Roku; UPnP 1.0" devicetype="media device" method="probed" conf="10"><cpe>cpe:/a:miniupnp_project:miniupnpd:1.4</cpe></service></port>
+<port protocol="tcp" portid="35566"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="unknown" servicefp="SF-Port35566-TCP:V=7.80%I=7%D=8/25%Time=5F45104B%P=x86_64-pc-linux-gnu%r(GetRequest,40,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nConnection:\x20close\r\nContent-Length:\x200\r\n\r\n&quot;)%r(HTTPOptions,40,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nConnection:\x20close\r\nContent-Length:\x200\r\n\r\n&quot;)%r(RTSPRequest,40,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nConnection:\x20close\r\nContent-Length:\x200\r\n\r\n&quot;)%r(FourOhFourRequest,40,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nConnection:\x20close\r\nContent-Length:\x200\r\n\r\n&quot;)%r(SIPOptions,40,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nConnection:\x20close\r\nContent-Length:\x200\r\n\r\n&quot;);" method="table" conf="3"/><script id="fingerprint-strings" output="&#xa;  FourOhFourRequest, GetRequest, HTTPOptions, RTSPRequest, SIPOptions: &#xa;    HTTP/1.1 404 Not Found&#xa;    Connection: close&#xa;    Content-Length: 0"><elem key="FourOhFourRequest, GetRequest, HTTPOptions, RTSPRequest, SIPOptions">&#xa;    HTTP/1.1 404 Not Found&#xa;    Connection: close&#xa;    Content-Length: 0</elem>
+</script></port>
+<port protocol="udp" portid="8060"><state state="open|filtered" reason="no-response" reason_ttl="0"/></port>
+<port protocol="udp" portid="35566"><state state="open|filtered" reason="no-response" reason_ttl="0"/></port>
+</ports>
+<os><portused state="open" proto="tcp" portid="8060"/>
+<osmatch name="Linux 3.2 - 3.8" accuracy="100" line="65033">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="100"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
+</osmatch>
+</os>
+<uptime seconds="654131" lastboot="Mon Aug 17 19:42:10 2020"/>
+<distance value="1"/>
+<tcpsequence index="256" difficulty="Good luck!" values="44CE7E92,AE60D76,E5B7D765,A79DB3D5,7D6D40F,A526ABEE"/>
+<ipidsequence class="All zeros" values="0,0,0,0,0,0"/>
+<tcptssequence class="100HZ" values="3E60EB5,3E60EBF,3E60EC9,3E60ED3,3E60EDD,3E60EE7"/>
+<trace>
+<hop ttl="1" ipaddr="192.168.1.4" rtt="32.90"/>
+</trace>
+<times srtt="32905" rttvar="55960" to="256745"/>
+</host>
+<runstats><finished time="1598361861" timestr="Tue Aug 25 09:24:21 2020" elapsed="204.59" summary="Nmap done at Tue Aug 25 09:24:21 2020; 1 IP address (1 host up) scanned in 204.59 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
 </runstats>
 </nmaprun>
