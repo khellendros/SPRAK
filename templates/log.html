@@ -22,7 +22,12 @@
     {% for row in ports %}
         <tr>
         {% for elem in row %}
-            <td>{{ elem }}</td>
+            <td>{% if elem != "NULL" %}
+                    {{ elem }}
+                {% else %}
+                    &nbsp;-&nbsp;
+                {% endif %}
+            </td>
         {% endfor %}
         </tr>
     {% endfor %}
