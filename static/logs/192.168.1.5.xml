@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.80 scan initiated Wed Aug 26 01:40:56 2020 as: nmap -sS -sU -T4 -p - -oA static/logs/192.168.1.5 192.168.1.5 -->
+<nmaprun scanner="nmap" args="nmap -sS -sU -T4 -p - -oA static/logs/192.168.1.5 192.168.1.5" start="1598420456" startstr="Wed Aug 26 01:40:56 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>
+<scaninfo type="udp" protocol="udp" numservices="65535" services="1-65535"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<target specification="192.168.1.5" status="skipped" reason="invalid"/>
+<runstats><finished time="1598420456" timestr="Wed Aug 26 01:40:56 2020" elapsed="0.03" summary="Nmap done at Wed Aug 26 01:40:56 2020; 0 IP addresses (0 hosts up) scanned in 0.03 seconds" exit="success"/><hosts up="0" down="0" total="0"/>
+</runstats>
+</nmaprun>

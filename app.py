@@ -14,7 +14,8 @@ def nmap_scan(hosts):
 
     #fast UDP and TCP scan for open ports
     for host in hosts:
-        nmap_cmd = ["nmap", "-sS", "-sU", "-T4", "-p", "-", "-oA", "static/logs/" + host, host]    
+        nmap_cmd = ["nmap", "-sS", "-sU", "-T4", "-p", "-", "-oA", "static/logs/" + host, host]
+        print("Scan 1: ", nmap_cmd)
         subprocess.run(nmap_cmd)
 
         xmltree = ET.parse("static/logs/" + host + ".xml")
@@ -30,6 +31,7 @@ def nmap_scan(hosts):
         
         if len(openports) > 0:
             nmap_cmd = ["nmap", "-sS", "-sU", "-A", "-p", portarg, "-oA", "static/logs/" + host, host]
+            print("Scan 2: ", nmap_cmd)
             subprocess.run(nmap_cmd)
 
         ### parse xml and insert into database ###
@@ -62,10 +64,33 @@ def nmap_scan(hosts):
         c = conn.execute("SELECT id FROM nmap WHERE host_id=?;", (host_id,))  #grab nmap table primary key to use on nmap_ports table
         nmap_id = c.fetchone()[0]
 
-        # iterate over all port and service elements in nmap xml file and add ports to nmap_ports table if they don't exist for 
-        # new scan and update existing service fingerprints
+        # iterate over all hostscript elements in nmap xml file and add to nmap_host_scripts table or update if entry exists
+        for hostscript in xmlroot.iter(tag="hostscript"):
 
-        for port in xmlroot.iter('port'):
+            for script in hostscript.iter(tag="script"):
+
+                if 'id' in script.attrib.keys():
+                    host_script_name = script.attrib['id']
+                else:
+                    host_script_name = "NULL"
+
+                if 'output' in script.attrib.keys():
+                    host_script_output = script.attrib['output']
+                else:
+                    host_script_output = "NULL"
+
+                #check if exists
+                c = conn.execute("SELECT id FROM nmap_host_scripts WHERE host_id = ? AND name = ?;", (host_id, host_script_name))
+
+                #add to table or update table if exists
+                if c.fetchone() is None:
+                    conn.execute("INSERT INTO nmap_host_scripts (name, output, host_id) VALUES (?, ?, ?);", (host_script_name, host_script_output, host_id))
+                else:
+                    conn.execute("UPDATE nmap_host_scripts SET output = ? WHERE host_id = ? AND name = ?;", (host_script_output, host_id, host_script_name))
+                    
+        # iterate over all port, service, and state elements in nmap xml file and add to nmap_ports table or update if exists
+        for port in xmlroot.iter(tag="port"):
+
             port_number = port.attrib['portid']
             protocol = port.attrib['protocol']
 
@@ -77,6 +102,7 @@ def nmap_scan(hosts):
             script_name = "NULL"
             script_output = "NULL"
 
+            #service element iteration
             for service in port.iter(tag="service"):
                 if 'name' in service.attrib.keys():
                     service_name = service.attrib['name']
@@ -87,12 +113,15 @@ def nmap_scan(hosts):
                 if 'extrainfo' in service.attrib.keys():
                     extrainfo = service.attrib['extrainfo']
             
+            #state element iteration
             for state in port.iter(tag="state"):
                 if 'state' in state.attrib.keys():
                     state = state.attrib['state']
 
+            #check if exists
             c = conn.execute("SELECT * FROM nmap_ports WHERE port_number=? AND protocol=? AND nmap_id=?;", (port_number, protocol, nmap_id))
             
+            #add to table or update table if exists
             if c.fetchone() is None:
                 conn.execute("INSERT INTO nmap_ports (nmap_id, port_number, protocol, state, service, version, product, \
                               extrainfo, has_script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", (nmap_id, port_number, protocol, state, service_name, version, product, extrainfo, "no script"))
@@ -103,14 +132,17 @@ def nmap_scan(hosts):
             c = conn.execute("SELECT id FROM nmap_ports WHERE nmap_id = ? AND port_number = ? AND protocol = ?", (nmap_id, port_number, protocol))
             nmap_ports_id = c.fetchone()[0]
 
+            #iterate over script elements inside port element and add to nmap_scripts table or update if exists
             for script in port.iter(tag="script"):
                 if 'id' in script.attrib.keys():
                     script_name = script.attrib['id']
                 if 'output' in script.attrib.keys():
                     script_output = script.attrib['output']
                 
+                #check if exists
                 c = conn.execute("SELECT id FROM nmap_scripts WHERE nmap_ports_id = ? AND name = ?;", (nmap_ports_id, script_name))
 
+                #add to table or update table if exists
                 if c.fetchone() is None:
                     conn.execute("INSERT INTO nmap_scripts (name, output, nmap_ports_id) VALUES (?, ?, ?);", (script_name, script_output, nmap_ports_id))
                     conn.execute("UPDATE nmap_ports SET has_script = 'has script' WHERE id = ?;", (nmap_ports_id,))
@@ -175,6 +207,8 @@ def log():
     scanenum = sql_query("SELECT timestamp, os_fingerprint FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
                          WHERE ip_address = ?", (host,))
     
+    hostscriptenum = sql_query("SELECT name, output FROM nmap_host_scripts JOIN hosts ON host_id=hosts.id WHERE ip_address = ?;",(host,))
+
     portenum = sql_query("SELECT port_number, protocol, state, service, version, product, \
                         extrainfo, has_script FROM hosts JOIN nmap ON hosts.id = nmap.host_id JOIN nmap_ports ON \
                         nmap.id = nmap_ports.nmap_id WHERE ip_address = ? ORDER BY port_number;", (host,))
@@ -188,4 +222,4 @@ def log():
     os_fingerprints = scanenum[0][1]
 
     return render_template("log.html", ip_address=host, lastscan=timestamp, \
-                           osmatches=os_fingerprints, ports=portenum, scripts=scriptenum)
+                           osmatches=os_fingerprints, ports=portenum, scripts=scriptenum, hostscripts=hostscriptenum)

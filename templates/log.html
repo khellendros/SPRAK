@@ -3,16 +3,24 @@
 {% block body %}
 <table class="table table-dark">
     <tr>
-        <th colspan="4">HOST</th>
-        <th colspan="3">LAST SCAN</th>
+        <th colspan="3">HOST</th>
+        <th colspan="4">LAST SCAN</th>
     </tr>
     <tr>
-        <td colspan="4">{{ ip_address }}</td>
-        <td colspan="3">{{ lastscan }}</td></tr>
+        <td colspan="3">{{ ip_address }}</td>
+        <td colspan="4">{{ lastscan }}</td></tr>
     <tr>
-        <th colspan="7">OS MATCHES</th>
+        <th colspan="3">OS MATCHES</th>
+        <th colspan="4">HOST SCRIPTS</th>
     </tr>
-    <tr><td colspan="7">{{ osmatches }}</td></tr>
+    <tr>
+        <td colspan="3" style="border-right: 1px solid #c5c5c56e;">{{ osmatches }}</td>
+        <td colspan="4">
+            {% for script in hostscripts %}
+                <span class="scriptname">{{ script[0] }}</span><br />{{ script[1] }}<br /><br />
+            {% endfor %}
+        </td>
+    </tr>
     <tr>
         <th>PORT</th>
         <th>PROTOCOL</th>
