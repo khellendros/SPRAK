@@ -6,8 +6,7 @@ import xml.etree.ElementTree as ET
 #       Fix DB locking on concurrent writes
 #       database datetime() wrong
 #       Implement secure coding practices.  Do we deploy this inside a container?  Nmap has to run as root for -sS
-#       Enumeration for scripts ran - <script id= output= >
-#       Enumeration for state - <state state= >
+#       Enumeration for scripts for host
 
 def nmap_scan(hosts):
 
