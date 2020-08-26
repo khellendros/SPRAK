@@ -39,20 +39,21 @@ def nmap_scan(hosts):
 
         os_fingerprints = []
 
-        for osmatch in xmlroot.iter('osmatch'):          #parse os match element and accuracy attribute
+        #parse os match element and accuracy attribute
+        for osmatch in xmlroot.iter('osmatch'):          
             os_fingerprints.append("[ " + osmatch.attrib['name'] + " :: Accuracy: " + osmatch.attrib['accuracy'] + " ]")
 
         os_fingerprint = " & ".join(os_fingerprints)
 
-        c = conn.execute("SELECT id FROM hosts WHERE ip_address=?;", (host,))  #check for existing host in database
-        row = c.fetchone()
+        #check for existing host in database
+        row = sql_query_one("SELECT id FROM hosts WHERE ip_address=?;", (host,))
 
         # if host doesn't exist, insert into hosts table along with nmap scan and fingerprint
         if row is None:
             conn.execute("INSERT INTO hosts (ip_address) VALUES (?);", (host,))
-            c = conn.execute("SELECT id FROM hosts WHERE ip_address=?;", (host,))   #grab new host primary key
-        
-            host_id = c.fetchone()[0]
+           
+            #grab new host primary key
+            host_id = sql_query_one("SELECT id FROM hosts WHERE ip_address=?;", (host,))[0]
 
             #insert new scan into nmap table or else update existing nmap scan in nmap table
             conn.execute("INSERT INTO nmap (host_id, os_fingerprint, timestamp) VALUES (?, ?, datetime('now'));", (host_id, os_fingerprint))
@@ -60,8 +61,8 @@ def nmap_scan(hosts):
             host_id = row[0]
             conn.execute("UPDATE nmap SET os_fingerprint = ?, timestamp = datetime('now') WHERE host_id=?;", (os_fingerprint, host_id))
 
-        c = conn.execute("SELECT id FROM nmap WHERE host_id=?;", (host_id,))  #grab nmap table primary key to use on nmap_ports table
-        nmap_id = c.fetchone()[0]
+        #grab nmap table primary key to use on nmap_ports table
+        nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))[0]
 
         # iterate over all hostscript elements in nmap xml file and add to nmap_host_scripts table or update if entry exists
         for hostscript in xmlroot.iter(tag="hostscript"):
@@ -78,11 +79,8 @@ def nmap_scan(hosts):
                 else:
                     host_script_output = "NULL"
 
-                #check if exists
-                c = conn.execute("SELECT id FROM nmap_host_scripts WHERE host_id = ? AND name = ?;", (host_id, host_script_name))
-
                 #add to table or update table if exists
-                if c.fetchone() is None:
+                if sql_query_one("SELECT id FROM nmap_host_scripts WHERE host_id = ? AND name = ?;", (host_id, host_script_name)) is None:
                     conn.execute("INSERT INTO nmap_host_scripts (name, output, host_id) VALUES (?, ?, ?);", (host_script_name, host_script_output, host_id))
                 else:
                     conn.execute("UPDATE nmap_host_scripts SET output = ? WHERE host_id = ? AND name = ?;", (host_script_output, host_id, host_script_name))
@@ -116,20 +114,16 @@ def nmap_scan(hosts):
             for state in port.iter(tag="state"):
                 if 'state' in state.attrib.keys():
                     state = state.attrib['state']
-
-            #check if exists
-            c = conn.execute("SELECT * FROM nmap_ports WHERE port_number=? AND protocol=? AND nmap_id=?;", (port_number, protocol, nmap_id))
             
             #add to table or update table if exists
-            if c.fetchone() is None:
+            if sql_query_one("SELECT * FROM nmap_ports WHERE port_number=? AND protocol=? AND nmap_id=?;", (port_number, protocol, nmap_id)) is None:
                 conn.execute("INSERT INTO nmap_ports (nmap_id, port_number, protocol, state, service, version, product, \
                               extrainfo, has_script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);", (nmap_id, port_number, protocol, state, service_name, version, product, extrainfo, "no script"))
             else: 
                 conn.execute("UPDATE nmap_ports SET service = ?, version = ?, product = ?, extrainfo = ?, state = ? WHERE \
                               nmap_id = ? AND port_number = ? AND protocol=?;", (service_name, version, product, extrainfo, state, nmap_id, port_number, protocol))
             
-            c = conn.execute("SELECT id FROM nmap_ports WHERE nmap_id = ? AND port_number = ? AND protocol = ?", (nmap_id, port_number, protocol))
-            nmap_ports_id = c.fetchone()[0]
+            nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id = ? AND port_number = ? AND protocol = ?", (nmap_id, port_number, protocol))[0]
 
             #iterate over script elements inside port element and add to nmap_scripts table or update if exists
             for script in port.iter(tag="script"):
@@ -138,11 +132,8 @@ def nmap_scan(hosts):
                 if 'output' in script.attrib.keys():
                     script_output = script.attrib['output']
                 
-                #check if exists
-                c = conn.execute("SELECT id FROM nmap_scripts WHERE nmap_ports_id = ? AND name = ?;", (nmap_ports_id, script_name))
-
                 #add to table or update table if exists
-                if c.fetchone() is None:
+                if sql_query_one("SELECT id FROM nmap_scripts WHERE nmap_ports_id = ? AND name = ?;", (nmap_ports_id, script_name)) is None:
                     conn.execute("INSERT INTO nmap_scripts (name, output, nmap_ports_id) VALUES (?, ?, ?);", (script_name, script_output, nmap_ports_id))
                     conn.execute("UPDATE nmap_ports SET has_script = 'has script' WHERE id = ?;", (nmap_ports_id,))
                 else:
@@ -161,7 +152,7 @@ def get_hosts():
     conn.close()
     return iplist
 
-def sql_query(query, args):
+def sql_query_all(query, args):
 
     conn = sqlite3.connect('SPRAK.db')
     c = conn.execute(query, args)
@@ -172,6 +163,18 @@ def sql_query(query, args):
     conn.close()
 
     return results
+
+def sql_query_one(query, args):
+
+    conn = sqlite3.connect('SPRAK.db')
+    c = conn.execute(query, args)
+
+    result = c.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    return result
 
 app = Flask(__name__)
 
@@ -203,16 +206,16 @@ def log():
 
     host = request.args.get("h")
 
-    scanenum = sql_query("SELECT timestamp, os_fingerprint FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
+    scanenum = sql_query_all("SELECT timestamp, os_fingerprint FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
                          WHERE ip_address = ?", (host,))
     
-    hostscriptenum = sql_query("SELECT name, output FROM nmap_host_scripts JOIN hosts ON host_id=hosts.id WHERE ip_address = ?;",(host,))
+    hostscriptenum = sql_query_all("SELECT name, output FROM nmap_host_scripts JOIN hosts ON host_id=hosts.id WHERE ip_address = ?;",(host,))
 
-    portenum = sql_query("SELECT port_number, protocol, state, service, version, product, \
+    portenum = sql_query_all("SELECT port_number, protocol, state, service, version, product, \
                         extrainfo, has_script FROM hosts JOIN nmap ON hosts.id = nmap.host_id JOIN nmap_ports ON \
                         nmap.id = nmap_ports.nmap_id WHERE ip_address = ? ORDER BY port_number;", (host,))
 
-    scriptenum = sql_query("SELECT port_number, protocol, name, output FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
+    scriptenum = sql_query_all("SELECT port_number, protocol, name, output FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
                             JOIN nmap_ports ON nmap.id = nmap_ports.nmap_id JOIN nmap_scripts \
                             ON nmap_ports.id = nmap_scripts.nmap_ports_id WHERE ip_address = ?; \
                             ", (host,))

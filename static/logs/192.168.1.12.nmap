@@ -1,0 +1,14 @@
+# Nmap 7.80 scan initiated Wed Aug 26 10:44:01 2020 as: nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.12 192.168.1.12
+Nmap scan report for 192.168.1.12
+Host is up (0.000064s latency).
+
+PORT    STATE  SERVICE         VERSION
+902/tcp open   ssl/vmware-auth VMware Authentication Daemon 1.10 (Uses VNC, SOAP)
+902/udp closed ideafarm-door
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Aggressive OS guesses: Linux 2.6.32 (96%), Linux 3.8 - 4.14 (95%), Linux 3.1 (95%), Linux 3.2 (95%), AXIS 210A or 211 Network Camera (Linux 2.6.17) (94%), Linux 3.7 - 3.11 (93%), Linux 3.10 (93%), Linux 3.8 - 3.9 (93%), Linux 3.7 - 3.10 (93%), ASUS RT-N56U WAP (Linux 3.4) (93%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 0 hops
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Wed Aug 26 10:45:05 2020 -- 1 IP address (1 host up) scanned in 64.15 seconds
