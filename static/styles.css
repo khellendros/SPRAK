@@ -17,9 +17,37 @@ th
 {
 
     text-align: center;
-    
+    color: rgb(29, 156, 29);
+
 }
 
+.scriptname
+{
+
+    color: rgba(245, 176, 29, 0.933);
+
+}
+
+.noborder
+{
+
+    border: none;
+
+}
+
+.center
+{
+
+    text-align: center;
+
+}
+
+.darkmode
+{
+
+    background-color: #3d3d3d;
+    
+}
 body
 {
 

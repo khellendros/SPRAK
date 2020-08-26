@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nmaprun>
 <?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
-<!-- Nmap 7.80 scan initiated Tue Aug 25 08:16:34 2020 as: nmap -sS -sU -A -p 902 -oA logs/192.168.1.12 192.168.1.12 -->
-<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 902 -oA logs/192.168.1.12 192.168.1.12" start="1598357794" startstr="Tue Aug 25 08:16:34 2020" version="7.80" xmloutputversion="1.04">
+<!-- Nmap 7.80 scan initiated Tue Aug 25 22:06:34 2020 as: nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.12 192.168.1.12 -->
+<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.12 192.168.1.12" start="1598407594" startstr="Tue Aug 25 22:06:34 2020" version="7.80" xmloutputversion="1.04">
 <scaninfo type="syn" protocol="tcp" numservices="1" services="902"/>
 <scaninfo type="udp" protocol="udp" numservices="1" services="902"/>
 <verbose level="0"/>
 <debugging level="0"/>
-<host starttime="1598357794" endtime="1598357858"><status state="up" reason="localhost-response" reason_ttl="0"/>
+<host starttime="1598407594" endtime="1598407658"><status state="up" reason="localhost-response" reason_ttl="0"/>
 <address addr="192.168.1.12" addrtype="ipv4"/>
 <hostnames>
 </hostnames>
@@ -50,13 +50,13 @@
 <osclass type="WAP" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3.4</cpe></osclass>
 </osmatch>
 </os>
-<uptime seconds="1219155" lastboot="Tue Aug 11 05:38:23 2020"/>
+<uptime seconds="1263384" lastboot="Tue Aug 11 07:11:14 2020"/>
 <distance value="0"/>
-<tcpsequence index="261" difficulty="Good luck!" values="C2C4F0,1C67D762,B8ECD39D,1DE189CD,98294E07,6A0EB40F"/>
+<tcpsequence index="261" difficulty="Good luck!" values="EB9BB24,D87E2DC3,FF670154,1BF8EBFE,DBFFDF7A,5C6993DE"/>
 <ipidsequence class="All zeros" values="0,0,0,0,0,0"/>
-<tcptssequence class="1000HZ" values="48A9E791,48A9E7F5,48A9E85A,48A9E8BE,48A9E922,48A9E986"/>
-<times srtt="52" rttvar="12" to="100000"/>
+<tcptssequence class="1000HZ" values="4B4CC935,4B4CC999,4B4CC9FD,4B4CCA61,4B4CCAC5,4B4CCB2A"/>
+<times srtt="67" rttvar="6" to="100000"/>
 </host>
-<runstats><finished time="1598357858" timestr="Tue Aug 25 08:17:38 2020" elapsed="64.39" summary="Nmap done at Tue Aug 25 08:17:38 2020; 1 IP address (1 host up) scanned in 64.39 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+<runstats><finished time="1598407658" timestr="Tue Aug 25 22:07:38 2020" elapsed="64.38" summary="Nmap done at Tue Aug 25 22:07:38 2020; 1 IP address (1 host up) scanned in 64.38 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
 </runstats>
 </nmaprun>

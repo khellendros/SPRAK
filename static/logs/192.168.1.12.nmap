@@ -1,6 +1,6 @@
-# Nmap 7.80 scan initiated Tue Aug 25 08:16:34 2020 as: nmap -sS -sU -A -p 902 -oA logs/192.168.1.12 192.168.1.12
+# Nmap 7.80 scan initiated Tue Aug 25 22:06:34 2020 as: nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.12 192.168.1.12
 Nmap scan report for 192.168.1.12
-Host is up (0.000052s latency).
+Host is up (0.000067s latency).
 
 PORT    STATE  SERVICE         VERSION
 902/tcp open   ssl/vmware-auth VMware Authentication Daemon 1.10 (Uses VNC, SOAP)
@@ -11,4 +11,4 @@ No exact OS matches for host (test conditions non-ideal).
 Network Distance: 0 hops
 
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-# Nmap done at Tue Aug 25 08:17:38 2020 -- 1 IP address (1 host up) scanned in 64.39 seconds
+# Nmap done at Tue Aug 25 22:07:38 2020 -- 1 IP address (1 host up) scanned in 64.38 seconds

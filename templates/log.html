@@ -3,17 +3,20 @@
 {% block body %}
 <table class="table table-dark">
     <tr>
-        <th colspan="3">HOST</th>
+        <th colspan="4">HOST</th>
         <th colspan="3">LAST SCAN</th>
     </tr>
-    <tr><td colspan="3">{{ ip_address }}</td><td colspan="3">{{ lastscan }}</td></tr>
     <tr>
-        <th colspan="6">OS MATCHES</th>
+        <td colspan="4">{{ ip_address }}</td>
+        <td colspan="3">{{ lastscan }}</td></tr>
+    <tr>
+        <th colspan="7">OS MATCHES</th>
     </tr>
-    <tr><td colspan="6">{{ osmatches }}</td></tr>
+    <tr><td colspan="7">{{ osmatches }}</td></tr>
     <tr>
         <th>PORT</th>
         <th>PROTOCOL</th>
+        <th>STATE</th>
         <th>SERVICE</th>
         <th>VERSION</th>
         <th>PRODUCT</th>
@@ -22,15 +25,32 @@
     {% for row in ports %}
         <tr>
         {% for elem in row %}
-            <td>{% if elem != "NULL" %}
-                    {{ elem }}
+            {% if elem == "has script" %}
+                    <tr style="border-top: none;">
+                        <th style="border-top: none;" colspan="7">[SCRIPTS]</th>
+                    </tr>
+                    {% for scriptrow in scripts %}
+                        {% if scriptrow[0] in row and scriptrow[1] in row %}
+                        <tr style="border-top: none;">
+                            <td style="border-top: none;" class="scripts" colspan="7"><span class="scriptname">{{ scriptrow[2] }}</span><br />{{ scriptrow[3] }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% elif elem == "no script" %}
+                    </tr>
+                {% elif elem != "NULL" %}
+                    <td>{{ elem }}</td>
                 {% else %}
-                    &nbsp;-&nbsp;
-                {% endif %}
-            </td>
+                    <td>&nbsp;-&nbsp;</td>
+            {% endif %}
         {% endfor %}
         </tr>
     {% endfor %}
 </table>
 <a href="hostlogs">Back to Host Logs</a>&nbsp;|&nbsp;<a href="/static/logs/{{ ip_address }}.nmap">Original Nmap Log</a>
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="popover"]').popover();   
+    });
+</script>
 {% endblock %}

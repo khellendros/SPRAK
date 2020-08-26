@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nmaprun>
 <?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
-<!-- Nmap 7.80 scan initiated Tue Aug 25 08:48:01 2020 as: nmap -sS -sU -A -p 8060,33961 -oA logs/192.168.1.5 192.168.1.5 -->
-<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 8060,33961 -oA logs/192.168.1.5 192.168.1.5" start="1598359681" startstr="Tue Aug 25 08:48:01 2020" version="7.80" xmloutputversion="1.04">
-<scaninfo type="syn" protocol="tcp" numservices="2" services="8060,33961"/>
-<scaninfo type="udp" protocol="udp" numservices="2" services="8060,33961"/>
+<!-- Nmap 7.80 scan initiated Tue Aug 25 20:11:57 2020 as: nmap -sS -sU -A -p 8060,9080,57852 -oA static/logs/192.168.1.5 192.168.1.5 -->
+<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 8060,9080,57852 -oA static/logs/192.168.1.5 192.168.1.5" start="1598400717" startstr="Tue Aug 25 20:11:57 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="3" services="8060,9080,57852"/>
+<scaninfo type="udp" protocol="udp" numservices="3" services="8060,9080,57852"/>
 <verbose level="0"/>
 <debugging level="0"/>
-<runstats><finished time="1598359681" timestr="Tue Aug 25 08:48:01 2020" elapsed="0.85" summary="Nmap done at Tue Aug 25 08:48:01 2020; 1 IP address (0 hosts up) scanned in 0.85 seconds" exit="success"/><hosts up="0" down="1" total="1"/>
+<runstats><finished time="1598400718" timestr="Tue Aug 25 20:11:58 2020" elapsed="0.89" summary="Nmap done at Tue Aug 25 20:11:58 2020; 1 IP address (0 hosts up) scanned in 0.89 seconds" exit="success"/><hosts up="0" down="1" total="1"/>
 </runstats>
 </nmaprun>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nmaprun>
 <?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
-<!-- Nmap 7.80 scan initiated Tue Aug 25 12:26:07 2020 as: nmap -sS -sU -A -p 135,139,445,1155,7680,17500,27036,32400,32469,60630,137,32414 -oA static/logs/192.168.1.9 192.168.1.9 -->
-<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 135,139,445,1155,7680,17500,27036,32400,32469,60630,137,32414 -oA static/logs/192.168.1.9 192.168.1.9" start="1598372767" startstr="Tue Aug 25 12:26:07 2020" version="7.80" xmloutputversion="1.04">
+<!-- Nmap 7.80 scan initiated Tue Aug 25 17:19:30 2020 as: nmap -sS -sU -A -p 135,139,445,1155,7680,17500,27036,32400,32469,60630,137,32414 -oA static/logs/192.168.1.9 192.168.1.9 -->
+<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 135,139,445,1155,7680,17500,27036,32400,32469,60630,137,32414 -oA static/logs/192.168.1.9 192.168.1.9" start="1598390370" startstr="Tue Aug 25 17:19:30 2020" version="7.80" xmloutputversion="1.04">
 <scaninfo type="syn" protocol="tcp" numservices="12" services="135,137,139,445,1155,7680,17500,27036,32400,32414,32469,60630"/>
 <scaninfo type="udp" protocol="udp" numservices="12" services="135,137,139,445,1155,7680,17500,27036,32400,32414,32469,60630"/>
 <verbose level="0"/>
 <debugging level="0"/>
-<host starttime="1598372767" endtime="1598373153"><status state="up" reason="arp-response" reason_ttl="0"/>
+<host starttime="1598390371" endtime="1598390756"><status state="up" reason="arp-response" reason_ttl="0"/>
 <address addr="192.168.1.9" addrtype="ipv4"/>
 <address addr="F8:59:71:4E:F5:7F" addrtype="mac" vendor="Intel Corporate"/>
 <hostnames>
@@ -50,23 +50,23 @@
 </osmatch>
 </os>
 <distance value="1"/>
-<tcpsequence index="262" difficulty="Good luck!" values="BC370370,C526FF29,6001E631,6B092DA6,C1AD34D6,94820AFD"/>
-<ipidsequence class="Incremental" values="247F,2480,2481,2482,2483,2484"/>
+<tcpsequence index="257" difficulty="Good luck!" values="2771C19,FF1B7CF0,4C266E80,84E1D878,AE24983E,7CC24EAC"/>
+<ipidsequence class="Incremental" values="530A,530B,530C,530D,530E,530F"/>
 <tcptssequence class="none returned (unsupported)"/>
-<hostscript><script id="clock-skew" output="1m29s"><elem key="median">89</elem>
-<elem key="stddev">0</elem>
-<elem key="mean">89</elem>
+<hostscript><script id="clock-skew" output="1m30s"><elem key="mean">90</elem>
 <elem key="count">1</elem>
+<elem key="median">90</elem>
+<elem key="stddev">0</elem>
 </script><script id="nbstat" output="NetBIOS name: DESKTOP-KROI5LB, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: f8:59:71:4e:f5:7f (Intel Corporate)"/><script id="smb2-security-mode" output="&#xa;  2.02: &#xa;    Message signing enabled but not required"><table key="2.02">
 <elem>Message signing enabled but not required</elem>
 </table>
-</script><script id="smb2-time" output="&#xa;  date: 2020-08-25T16:29:28&#xa;  start_date: N/A"><elem key="date">2020-08-25T16:29:28</elem>
+</script><script id="smb2-time" output="&#xa;  date: 2020-08-25T21:22:53&#xa;  start_date: N/A"><elem key="date">2020-08-25T21:22:53</elem>
 <elem key="start_date">N/A</elem>
 </script></hostscript><trace>
-<hop ttl="1" ipaddr="192.168.1.9" rtt="3.35"/>
+<hop ttl="1" ipaddr="192.168.1.9" rtt="5.26"/>
 </trace>
-<times srtt="3351" rttvar="1714" to="100000"/>
+<times srtt="5256" rttvar="3266" to="100000"/>
 </host>
-<runstats><finished time="1598373153" timestr="Tue Aug 25 12:32:33 2020" elapsed="386.60" summary="Nmap done at Tue Aug 25 12:32:33 2020; 1 IP address (1 host up) scanned in 386.60 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+<runstats><finished time="1598390756" timestr="Tue Aug 25 17:25:56 2020" elapsed="386.12" summary="Nmap done at Tue Aug 25 17:25:56 2020; 1 IP address (1 host up) scanned in 386.12 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
 </runstats>
 </nmaprun>

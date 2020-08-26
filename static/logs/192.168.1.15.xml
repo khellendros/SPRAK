@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.80 scan initiated Tue Aug 25 20:23:50 2020 as: nmap -sS -sU -A -p 135,139,445,2701,3389,49670,137 -oA static/logs/192.168.1.15 192.168.1.15 -->
+<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 135,139,445,2701,3389,49670,137 -oA static/logs/192.168.1.15 192.168.1.15" start="1598401430" startstr="Tue Aug 25 20:23:50 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="7" services="135,137,139,445,2701,3389,49670"/>
+<scaninfo type="udp" protocol="udp" numservices="7" services="135,137,139,445,2701,3389,49670"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1598401431" endtime="1598401621"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.1.15" addrtype="ipv4"/>
+<address addr="88:78:73:34:84:7E" addrtype="mac" vendor="Intel Corporate"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="tcp" portid="135"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="msrpc" product="Microsoft Windows RPC" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="tcp" portid="137"><state state="filtered" reason="no-response" reason_ttl="0"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="tcp" portid="139"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="netbios-ssn" product="Microsoft Windows netbios-ssn" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="tcp" portid="445"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="microsoft-ds" method="table" conf="3"/></port>
+<port protocol="tcp" portid="2701"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="cmrcservice" product="Microsoft Configuration Manager Remote Control service" extrainfo="CmRcService.exe" ostype="Windows" method="probed" conf="10"><cpe>cpe:/a:microsoft:systems_management_server</cpe><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="tcp" portid="3389"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="ms-wbt-server" product="Microsoft Terminal Services" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service><script id="rdp-ntlm-info" output="&#xa;  Target_Name: CHEROKEE&#xa;  NetBIOS_Domain_Name: CHEROKEE&#xa;  NetBIOS_Computer_Name: 5CG71908PS&#xa;  DNS_Domain_Name: cherokee.k12.ga.us&#xa;  DNS_Computer_Name: 5CG71908PS.cherokee.k12.ga.us&#xa;  DNS_Tree_Name: cherokee.k12.ga.us&#xa;  Product_Version: 10.0.18362&#xa;  System_Time: 2020-08-26T00:27:05+00:00"><elem key="Target_Name">CHEROKEE</elem>
+<elem key="NetBIOS_Domain_Name">CHEROKEE</elem>
+<elem key="NetBIOS_Computer_Name">5CG71908PS</elem>
+<elem key="DNS_Domain_Name">cherokee.k12.ga.us</elem>
+<elem key="DNS_Computer_Name">5CG71908PS.cherokee.k12.ga.us</elem>
+<elem key="DNS_Tree_Name">cherokee.k12.ga.us</elem>
+<elem key="Product_Version">10.0.18362</elem>
+<elem key="System_Time">2020-08-26T00:27:05+00:00</elem>
+</script><script id="ssl-cert" output="Subject: commonName=5CG71908PS.cherokee.k12.ga.us&#xa;Not valid before: 2020-07-21T19:26:14&#xa;Not valid after:  2021-01-20T19:26:14"><table key="subject">
+<elem key="commonName">5CG71908PS.cherokee.k12.ga.us</elem>
+</table>
+<table key="issuer">
+<elem key="commonName">5CG71908PS.cherokee.k12.ga.us</elem>
+</table>
+<table key="pubkey">
+<elem key="modulus">userdata: 0x5578a35c4478</elem>
+<elem key="type">rsa</elem>
+<elem key="bits">2048</elem>
+<elem key="exponent">userdata: 0x5578a35c4438</elem>
+</table>
+<table key="extensions">
+<table>
+<elem key="name">X509v3 Extended Key Usage</elem>
+<elem key="value">TLS Web Server Authentication</elem>
+</table>
+<table>
+<elem key="name">X509v3 Key Usage</elem>
+<elem key="value">Key Encipherment, Data Encipherment</elem>
+</table>
+</table>
+<elem key="sig_algo">sha256WithRSAEncryption</elem>
+<table key="validity">
+<elem key="notBefore">2020-07-21T19:26:14</elem>
+<elem key="notAfter">2021-01-20T19:26:14</elem>
+</table>
+<elem key="md5">77de7bcc07f0158ef2c6e03be6d7ff01</elem>
+<elem key="sha1">48e495efe6995400b21e4c2b76f943c1af510b8d</elem>
+<elem key="pem">-&#45;&#45;&#45;&#45;BEGIN CERTIFICATE-&#45;&#45;&#45;&#45;&#xa;MIIC/jCCAeagAwIBAgIQPxUZDiQWzLJLtTPdREBKtDANBgkqhkiG9w0BAQsFADAo&#xa;MSYwJAYDVQQDEx01Q0c3MTkwOFBTLmNoZXJva2VlLmsxMi5nYS51czAeFw0yMDA3&#xa;MjExOTI2MTRaFw0yMTAxMjAxOTI2MTRaMCgxJjAkBgNVBAMTHTVDRzcxOTA4UFMu&#xa;Y2hlcm9rZWUuazEyLmdhLnVzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC&#xa;AQEAwulG7bwlsTfCSAUs9sIZW3rbNUFG75Y7RL+awlmcrOuO4dDXioHTgY3kqDeh&#xa;uQr2+U3Q9MPy0da4Wn62aXGa087xXfH+eayYH4Km07KZEIz/xeRQbrIJ6QSwGtva&#xa;teDkxomzCACD7PFIC/kPsaqTTX8+JapselvXuPTLV8GKWRwsP/iVd308Muqa3aJS&#xa;c+E9y6nFe+MS6Wm1w0lLLdM4ZcKFSw96IyKAtmjGoaUpcspFU9x9YiF/4RBvvszE&#xa;8NY/DCnFOyW0tQi/zfR25/9BVwznzqlFzVlVmBBA4PXwCTKD+PCQq50atXZuHIJL&#xa;cgVWn0AjOjEfp5mk/1UbIz8wNQIDAQABoyQwIjATBgNVHSUEDDAKBggrBgEFBQcD&#xa;ATALBgNVHQ8EBAMCBDAwDQYJKoZIhvcNAQELBQADggEBAGMkvlTJMHzr02a1BqBr&#xa;zXvQIiwn1SREKMv/gRHF2WVmt8xSShjOVExl/teCjLjl2UmeXBcHHy5FhoApHIuo&#xa;8mMqvSo9KrMmqxhy4Q0+7O5p0AF0VLmSv+s63M23HagW1ONWHf/L+s0LPVZm+yvb&#xa;QPzfT/go9nK19td4WuBxJi0X0fEdopOaJdkYhl/HVjrK6o+2/tGjw8Ob+UGfH5x7&#xa;UQEqaCYgXPFQxiOui41uAHDjXs+ukBFjm99eIExfZbnZDn7av+L+8gpv+znnGk8X&#xa;yCWAzL92CvMayuvOfVJormekN1SX5//HzDbbeaGe/k6MDbbJK11qIv1Cd7mEccSV&#xa;RxQ=&#xa;-&#45;&#45;&#45;&#45;END CERTIFICATE-&#45;&#45;&#45;&#45;&#xa;</elem>
+</script><script id="ssl-date" output="2020-08-26T00:28:31+00:00; +1m30s from scanner time."><elem key="date">2020-08-26T00:28:31+00:00</elem>
+<elem key="delta">90.0</elem>
+</script></port>
+<port protocol="tcp" portid="49670"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="msrpc" product="Microsoft Windows RPC" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="udp" portid="135"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="msrpc" method="table" conf="3"/></port>
+<port protocol="udp" portid="137"><state state="open" reason="udp-response" reason_ttl="128"/><service name="netbios-ns" product="Microsoft Windows or Samba netbios-ns" extrainfo="workgroup: CHEROKEE" hostname="5CG71908PS" method="probed" conf="10"/></port>
+<port protocol="udp" portid="139"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="netbios-ssn" method="table" conf="3"/></port>
+<port protocol="udp" portid="445"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="microsoft-ds" method="table" conf="3"/></port>
+<port protocol="udp" portid="2701"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="sms-rcinfo" method="table" conf="3"/></port>
+<port protocol="udp" portid="3389"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="ms-wbt-server" method="table" conf="3"/></port>
+<port protocol="udp" portid="49670"><state state="open|filtered" reason="no-response" reason_ttl="0"/></port>
+</ports>
+<os><portused state="open" proto="tcp" portid="135"/>
+<osmatch name="Microsoft Windows Server 2008 SP1 or Windows Server 2008 R2" accuracy="86" line="74830">
+<osclass type="general purpose" vendor="Microsoft" osfamily="Windows" osgen="2008" accuracy="86"><cpe>cpe:/o:microsoft:windows_server_2008::sp1</cpe><cpe>cpe:/o:microsoft:windows_server_2008:r2</cpe></osclass>
+</osmatch>
+<osmatch name="Microsoft Windows XP SP2" accuracy="85" line="81128">
+<osclass type="general purpose" vendor="Microsoft" osfamily="Windows" osgen="XP" accuracy="85"><cpe>cpe:/o:microsoft:windows_xp::sp2</cpe></osclass>
+</osmatch>
+<osmatch name="Microsoft Windows 7" accuracy="85" line="75938">
+<osclass type="general purpose" vendor="Microsoft" osfamily="Windows" osgen="7" accuracy="85"><cpe>cpe:/o:microsoft:windows_7</cpe></osclass>
+</osmatch>
+</os>
+<distance value="1"/>
+<tcpsequence index="258" difficulty="Good luck!" values="8B1BCA5E,C9802024,A3E41EAC,A678DFB6,536F96D9,2C2F1313"/>
+<ipidsequence class="Incremental" values="DE45,DE46,DE47,DE48,DE49,DE4A"/>
+<tcptssequence class="none returned (unsupported)"/>
+<hostscript><script id="clock-skew" output="mean: 1m29s, deviation: 0s, median: 1m28s"><elem key="median">88</elem>
+<elem key="mean">89</elem>
+<elem key="count">3</elem>
+<elem key="stddev">0</elem>
+</script><script id="nbstat" output="NetBIOS name: 5CG71908PS, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: 88:78:73:34:84:7e (Intel Corporate)"/><script id="smb2-security-mode" output="&#xa;  2.02: &#xa;    Message signing enabled but not required"><table key="2.02">
+<elem>Message signing enabled but not required</elem>
+</table>
+</script><script id="smb2-time" output="&#xa;  date: 2020-08-26T00:27:05&#xa;  start_date: N/A"><elem key="date">2020-08-26T00:27:05</elem>
+<elem key="start_date">N/A</elem>
+</script></hostscript><trace>
+<hop ttl="1" ipaddr="192.168.1.15" rtt="3.58"/>
+</trace>
+<times srtt="3578" rttvar="1152" to="100000"/>
+</host>
+<runstats><finished time="1598401621" timestr="Tue Aug 25 20:27:01 2020" elapsed="191.13" summary="Nmap done at Tue Aug 25 20:27:01 2020; 1 IP address (1 host up) scanned in 191.13 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>
