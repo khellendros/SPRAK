@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE nmaprun>
-<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
-<!-- Nmap 7.80 scan initiated Wed Aug 26 07:18:19 2020 as: nmap -sS -sU -T4 -p - -oA static/logs/192.168.1.1 192.168.1.1 -->
-<nmaprun scanner="nmap" args="nmap -sS -sU -T4 -p - -oA static/logs/192.168.1.1 192.168.1.1" start="1598440699" startstr="Wed Aug 26 07:18:19 2020" version="7.80" xmloutputversion="1.04">
-<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>
-<scaninfo type="udp" protocol="udp" numservices="65535" services="1-65535"/>
