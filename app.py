@@ -14,7 +14,7 @@ def nmap_scan(hosts):
     #fast UDP and TCP scan for open ports
     for host in hosts:
         nmap_cmd = ["nmap", "-sS", "-sU", "-T4", "-p", "-", "-oA", "static/logs/" + host, host]
-        print("Scan 1: ", nmap_cmd)
+        print("Nmap Scan Phase 1: ", nmap_cmd)
         subprocess.run(nmap_cmd)
 
         xmltree = ET.parse("static/logs/" + host + ".xml")
@@ -30,7 +30,7 @@ def nmap_scan(hosts):
         
         if len(openports) > 0:
             nmap_cmd = ["nmap", "-sS", "-sU", "-A", "-p", portarg, "-oA", "static/logs/" + host, host]
-            print("Scan 2: ", nmap_cmd)
+            print("Nmap Scan Phase 2: ", nmap_cmd)
             subprocess.run(nmap_cmd)
 
         ### parse xml and insert into database ###
@@ -194,6 +194,20 @@ def nmapscan():
 
     return "Scan Complete!"
 
+@app.route("/gobusterscan")
+def gobusterscan():
+
+    hostsarg = request.args.get("hosts")
+    hosts = host.arg.split(",")
+
+    for host in hosts:
+        if "#" in host:
+            vhost_scan(host.replace("#", ""))
+        else:
+            dir_scan(host)
+    
+    return "Under Construction!"
+
 @app.route("/hostlogs")
 def hostlogs():
 
@@ -201,10 +215,8 @@ def hostlogs():
 
     return render_template("hostlogs.html", hostlist=dbhosts)
 
-@app.route("/log")
-def log():
-
-    host = request.args.get("h")
+@app.route("/log/<host>")
+def log(host):
 
     scanenum = sql_query_all("SELECT timestamp, os_fingerprint FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
                          WHERE ip_address = ?", (host,))
