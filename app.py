@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import sqlite3, subprocess
 import xml.etree.ElementTree as ET
 
@@ -51,15 +51,18 @@ def nmap_scan(hosts):
         # if host doesn't exist, insert into hosts table along with nmap scan and fingerprint
         if row is None:
             conn.execute("INSERT INTO hosts (ip_address) VALUES (?);", (host,))
-           
+            conn.commit()
+
             #grab new host primary key
             host_id = sql_query_one("SELECT id FROM hosts WHERE ip_address=?;", (host,))[0]
 
             #insert new scan into nmap table or else update existing nmap scan in nmap table
             conn.execute("INSERT INTO nmap (host_id, os_fingerprint, timestamp) VALUES (?, ?, datetime('now'));", (host_id, os_fingerprint))
+            conn.commit()
         else:
             host_id = row[0]
             conn.execute("UPDATE nmap SET os_fingerprint = ?, timestamp = datetime('now') WHERE host_id=?;", (os_fingerprint, host_id))
+            conn.commit()
 
         #grab nmap table primary key to use on nmap_ports table
         nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))[0]
@@ -84,7 +87,9 @@ def nmap_scan(hosts):
                     conn.execute("INSERT INTO nmap_host_scripts (name, output, host_id) VALUES (?, ?, ?);", (host_script_name, host_script_output, host_id))
                 else:
                     conn.execute("UPDATE nmap_host_scripts SET output = ? WHERE host_id = ? AND name = ?;", (host_script_output, host_id, host_script_name))
-                    
+
+                conn.commit()
+
         # iterate over all port, service, and state elements in nmap xml file and add to nmap_ports table or update if exists
         for port in xmlroot.iter(tag="port"):
 
@@ -123,6 +128,7 @@ def nmap_scan(hosts):
                 conn.execute("UPDATE nmap_ports SET service = ?, version = ?, product = ?, extrainfo = ?, state = ? WHERE \
                               nmap_id = ? AND port_number = ? AND protocol=?;", (service_name, version, product, extrainfo, state, nmap_id, port_number, protocol))
             
+            conn.commit()
             nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id = ? AND port_number = ? AND protocol = ?", (nmap_id, port_number, protocol))[0]
 
             #iterate over script elements inside port element and add to nmap_scripts table or update if exists
@@ -176,6 +182,7 @@ def sql_query_one(query, args):
 
     return result
 
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -197,14 +204,6 @@ def nmapscan():
 @app.route("/gobusterscan")
 def gobusterscan():
 
-    hostsarg = request.args.get("hosts")
-    hosts = host.arg.split(",")
-
-    for host in hosts:
-        if "#" in host:
-            vhost_scan(host.replace("#", ""))
-        else:
-            dir_scan(host)
     
     return "Under Construction!"
 
@@ -215,7 +214,7 @@ def hostlogs():
 
     return render_template("hostlogs.html", hostlist=dbhosts)
 
-@app.route("/log/<host>")
+@app.route("/log/<host>/ports")
 def log(host):
 
     scanenum = sql_query_all("SELECT timestamp, os_fingerprint FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
@@ -235,5 +234,22 @@ def log(host):
     timestamp = scanenum[0][0]
     os_fingerprints = scanenum[0][1]
 
-    return render_template("log.html", ip_address=host, lastscan=timestamp, \
-                           osmatches=os_fingerprints, ports=portenum, scripts=scriptenum, hostscripts=hostscriptenum)
+    if request.content_type == "application/json" and request.accept_mimetypes.accept_json:
+        json_log = [{ "Host": host, "Last Scan": timestamp, "OS Fingerprints": os_fingerprints}]
+
+        for hostscript in hostscriptenum:
+            json_log.append({"Script Name" : hostscript[0], "Output" : hostscript[1]})
+
+        for port in portenum:
+            json_log.append({"Port" : port[0], "Protocol" : port[1], "State" : port[2], "Service" : port[3], "Version" : port[4], "Product" : port[5], \
+                            "Info" : port[6]})
+            
+            for script in scriptenum:
+                if script[0] == port[0] and script[1] == port[1]:
+                    json_log[len(json_log) -1].update({script[2] : script[3]})
+            
+        return jsonify(json_log)
+    else:
+        return render_template("log.html", ip_address=host, lastscan=timestamp, \
+                                osmatches=os_fingerprints, ports=portenum, scripts=scriptenum, hostscripts=hostscriptenum)
+
