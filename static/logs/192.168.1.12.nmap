@@ -1,4 +1,4 @@
-# Nmap 7.80 scan initiated Wed Aug 26 10:44:01 2020 as: nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.12 192.168.1.12
+# Nmap 7.80 scan initiated Wed Aug 26 11:36:10 2020 as: nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.12 192.168.1.12
 Nmap scan report for 192.168.1.12
 Host is up (0.000064s latency).
 
@@ -11,4 +11,4 @@ No exact OS matches for host (test conditions non-ideal).
 Network Distance: 0 hops
 
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-# Nmap done at Wed Aug 26 10:45:05 2020 -- 1 IP address (1 host up) scanned in 64.15 seconds
+# Nmap done at Wed Aug 26 11:37:14 2020 -- 1 IP address (1 host up) scanned in 64.20 seconds

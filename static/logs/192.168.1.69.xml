@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nmaprun>
 <?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
-<!-- Nmap 7.80 scan initiated Wed Aug 26 11:36:10 2020 as: nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.12 192.168.1.12 -->
-<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.12 192.168.1.12" start="1598456170" startstr="Wed Aug 26 11:36:10 2020" version="7.80" xmloutputversion="1.04">
+<!-- Nmap 7.80 scan initiated Wed Sep  2 21:35:29 2020 as: nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.69 192.168.1.69 -->
+<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.69 192.168.1.69" start="1599096929" startstr="Wed Sep  2 21:35:29 2020" version="7.80" xmloutputversion="1.04">
 <scaninfo type="syn" protocol="tcp" numservices="1" services="902"/>
 <scaninfo type="udp" protocol="udp" numservices="1" services="902"/>
 <verbose level="0"/>
 <debugging level="0"/>
-<host starttime="1598456170" endtime="1598456234"><status state="up" reason="localhost-response" reason_ttl="0"/>
-<address addr="192.168.1.12" addrtype="ipv4"/>
+<host starttime="1599096929" endtime="1599096993"><status state="up" reason="localhost-response" reason_ttl="0"/>
+<address addr="192.168.1.69" addrtype="ipv4"/>
 <hostnames>
+<hostname name="thegrid.attlocal.net" type="PTR"/>
 </hostnames>
 <ports><port protocol="tcp" portid="902"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="vmware-auth" product="VMware Authentication Daemon" version="1.10" extrainfo="Uses VNC, SOAP" tunnel="ssl" method="probed" conf="10"/></port>
 <port protocol="udp" portid="902"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="ideafarm-door" method="table" conf="3"/></port>
@@ -39,9 +40,6 @@
 <osmatch name="Linux 3.10" accuracy="93" line="63075">
 <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3.10</cpe></osclass>
 </osmatch>
-<osmatch name="Linux 3.8 - 3.9" accuracy="93" line="66119">
-<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
-</osmatch>
 <osmatch name="Linux 3.7 - 3.10" accuracy="93" line="65736">
 <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
 </osmatch>
@@ -49,14 +47,17 @@
 <osclass type="WAP" vendor="Asus" osfamily="embedded" accuracy="93"><cpe>cpe:/h:asus:rt-n56u</cpe></osclass>
 <osclass type="WAP" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3.4</cpe></osclass>
 </osmatch>
+<osmatch name="Linux 3.16" accuracy="93" line="63962">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="93"><cpe>cpe:/o:linux:linux_kernel:3.16</cpe></osclass>
+</osmatch>
 </os>
-<uptime seconds="13621" lastboot="Wed Aug 26 07:50:13 2020"/>
+<uptime seconds="3883842" lastboot="Sun Jul 19 22:45:51 2020"/>
 <distance value="0"/>
-<tcpsequence index="263" difficulty="Good luck!" values="83A38431,A2BE0FA9,A687D0A6,39A17621,A42D2BEB,7AE6CBBF"/>
+<tcpsequence index="264" difficulty="Good luck!" values="36210042,81F1C5D1,713EDC49,DD482260,DBAC938E,54570569"/>
 <ipidsequence class="All zeros" values="0,0,0,0,0,0"/>
-<tcptssequence class="1000HZ" values="CEE6CB,CEE72F,CEE793,CEE7F7,CEE85C,CEE8C0"/>
-<times srtt="64" rttvar="6" to="100000"/>
+<tcptssequence class="1000HZ" values="E77DC981,E77DC9E6,E77DCA4A,E77DCAAE,E77DCB12,E77DCB77"/>
+<times srtt="71" rttvar="10" to="100000"/>
 </host>
-<runstats><finished time="1598456234" timestr="Wed Aug 26 11:37:14 2020" elapsed="64.20" summary="Nmap done at Wed Aug 26 11:37:14 2020; 1 IP address (1 host up) scanned in 64.20 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+<runstats><finished time="1599096993" timestr="Wed Sep  2 21:36:33 2020" elapsed="64.25" summary="Nmap done at Wed Sep  2 21:36:33 2020; 1 IP address (1 host up) scanned in 64.25 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
 </runstats>
 </nmaprun>

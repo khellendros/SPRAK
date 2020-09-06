@@ -1,72 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nmaprun>
 <?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
-<!-- Nmap 7.80 scan initiated Wed Aug 26 09:03:20 2020 as: nmap -sS -sU -A -p 135,139,445,1155,7680,17500,27036,32400,32469,60630,137,32414 -oA static/logs/192.168.1.9 192.168.1.9 -->
-<nmaprun scanner="nmap" args="nmap -sS -sU -A -p 135,139,445,1155,7680,17500,27036,32400,32469,60630,137,32414 -oA static/logs/192.168.1.9 192.168.1.9" start="1598447000" startstr="Wed Aug 26 09:03:20 2020" version="7.80" xmloutputversion="1.04">
-<scaninfo type="syn" protocol="tcp" numservices="12" services="135,137,139,445,1155,7680,17500,27036,32400,32414,32469,60630"/>
-<scaninfo type="udp" protocol="udp" numservices="12" services="135,137,139,445,1155,7680,17500,27036,32400,32414,32469,60630"/>
+<!-- Nmap 7.80 scan initiated Wed Sep  2 21:06:05 2020 as: nmap -sS -sU -T4 -p - -oA static/logs/192.168.1.9 192.168.1.9 -->
+<nmaprun scanner="nmap" args="nmap -sS -sU -T4 -p - -oA static/logs/192.168.1.9 192.168.1.9" start="1599095165" startstr="Wed Sep  2 21:06:05 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>
+<scaninfo type="udp" protocol="udp" numservices="65535" services="1-65535"/>
 <verbose level="0"/>
 <debugging level="0"/>
-<host starttime="1598447000" endtime="1598447385"><status state="up" reason="arp-response" reason_ttl="0"/>
-<address addr="192.168.1.9" addrtype="ipv4"/>
-<address addr="F8:59:71:4E:F5:7F" addrtype="mac" vendor="Intel Corporate"/>
-<hostnames>
-</hostnames>
-<ports><port protocol="tcp" portid="135"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="msrpc" product="Microsoft Windows RPC" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
-<port protocol="tcp" portid="137"><state state="filtered" reason="no-response" reason_ttl="0"/><service name="netbios-ns" method="table" conf="3"/></port>
-<port protocol="tcp" portid="139"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="netbios-ssn" product="Microsoft Windows netbios-ssn" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
-<port protocol="tcp" portid="445"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="microsoft-ds" method="table" conf="3"/></port>
-<port protocol="tcp" portid="1155"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="upnp" product="Platinum UPnP" version="1.0.5.13" extrainfo="UPnP/1.0 DLNADOC/1.50" method="probed" conf="10"/></port>
-<port protocol="tcp" portid="7680"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="pando-pub" method="table" conf="3"/></port>
-<port protocol="tcp" portid="17500"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="db-lsp" tunnel="ssl" method="table" conf="3"/></port>
-<port protocol="tcp" portid="27036"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="steam" product="Valve Steam In-Home Streaming service" extrainfo="TLSv1.2 PSK" tunnel="ssl" method="probed" conf="10"/></port>
-<port protocol="tcp" portid="32400"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="http" product="Plex Media Server httpd" method="probed" conf="10"><cpe>cpe:/a:plex:plex_media_server</cpe></service><script id="http-auth" output="&#xa;HTTP/1.1 401 Unauthorized&#xd;&#xa;  Server returned status 401 but no WWW-Authenticate header.&#xa;"/><script id="http-cors" output="HEAD GET POST PUT DELETE OPTIONS"/><script id="http-title" output="Unauthorized"><elem key="title">Unauthorized</elem>
-</script></port>
-<port protocol="tcp" portid="32414"><state state="filtered" reason="no-response" reason_ttl="0"/></port>
-<port protocol="tcp" portid="32469"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="upnp" product="Platinum UPnP" version="1.0.5.13" extrainfo="UPnP/1.0 DLNADOC/1.50" method="probed" conf="10"/></port>
-<port protocol="tcp" portid="60630"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="msrpc" product="Microsoft Windows RPC" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
-<port protocol="udp" portid="135"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="msrpc" method="table" conf="3"/></port>
-<port protocol="udp" portid="137"><state state="open" reason="udp-response" reason_ttl="128"/><service name="netbios-ns" product="Microsoft Windows or Samba netbios-ns" extrainfo="workgroup: WORKGROUP" hostname="DESKTOP-KROI5LB" method="probed" conf="10"/></port>
-<port protocol="udp" portid="139"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="netbios-ssn" method="table" conf="3"/></port>
-<port protocol="udp" portid="445"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="microsoft-ds" method="table" conf="3"/></port>
-<port protocol="udp" portid="1155"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="nfa" method="table" conf="3"/></port>
-<port protocol="udp" portid="7680"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="pando-pub" method="table" conf="3"/></port>
-<port protocol="udp" portid="17500"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="db-lsp-disc" method="table" conf="3"/></port>
-<port protocol="udp" portid="27036"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
-<port protocol="udp" portid="32400"><state state="open|filtered" reason="no-response" reason_ttl="0"/></port>
-<port protocol="udp" portid="32414"><state state="open" reason="udp-response" reason_ttl="128"/></port>
-<port protocol="udp" portid="32469"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
-<port protocol="udp" portid="60630"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
-</ports>
-<os><portused state="open" proto="tcp" portid="135"/>
-<osmatch name="Microsoft Windows XP SP2" accuracy="87" line="81128">
-<osclass type="general purpose" vendor="Microsoft" osfamily="Windows" osgen="XP" accuracy="87"><cpe>cpe:/o:microsoft:windows_xp::sp2</cpe></osclass>
-</osmatch>
-<osmatch name="Microsoft Windows 7" accuracy="85" line="75938">
-<osclass type="general purpose" vendor="Microsoft" osfamily="Windows" osgen="7" accuracy="85"><cpe>cpe:/o:microsoft:windows_7</cpe></osclass>
-</osmatch>
-<osmatch name="Microsoft Windows Server 2008 SP1 or Windows Server 2008 R2" accuracy="85" line="74830">
-<osclass type="general purpose" vendor="Microsoft" osfamily="Windows" osgen="2008" accuracy="85"><cpe>cpe:/o:microsoft:windows_server_2008::sp1</cpe><cpe>cpe:/o:microsoft:windows_server_2008:r2</cpe></osclass>
-</osmatch>
-</os>
-<distance value="1"/>
-<tcpsequence index="263" difficulty="Good luck!" values="3D034C40,4AAD5D04,D336AB8D,9136AD6F,93B6D4D,851AE106"/>
-<ipidsequence class="Incremental" values="4520,4521,4522,4523,4524,4525"/>
-<tcptssequence class="none returned (unsupported)"/>
-<hostscript><script id="clock-skew" output="1m29s"><elem key="median">89</elem>
-<elem key="mean">89</elem>
-<elem key="count">1</elem>
-<elem key="stddev">0</elem>
-</script><script id="nbstat" output="NetBIOS name: DESKTOP-KROI5LB, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: f8:59:71:4e:f5:7f (Intel Corporate)"/><script id="smb2-security-mode" output="&#xa;  2.02: &#xa;    Message signing enabled but not required"><table key="2.02">
-<elem>Message signing enabled but not required</elem>
-</table>
-</script><script id="smb2-time" output="&#xa;  date: 2020-08-26T13:06:41&#xa;  start_date: N/A"><elem key="date">2020-08-26T13:06:41</elem>
-<elem key="start_date">N/A</elem>
-</script></hostscript><trace>
-<hop ttl="1" ipaddr="192.168.1.9" rtt="3.97"/>
-</trace>
-<times srtt="3973" rttvar="1555" to="100000"/>
-</host>
-<runstats><finished time="1598447385" timestr="Wed Aug 26 09:09:45 2020" elapsed="385.81" summary="Nmap done at Wed Aug 26 09:09:45 2020; 1 IP address (1 host up) scanned in 385.81 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+<runstats><finished time="1599095165" timestr="Wed Sep  2 21:06:05 2020" elapsed="0.56" summary="Nmap done at Wed Sep  2 21:06:05 2020; 1 IP address (0 hosts up) scanned in 0.56 seconds" exit="success"/><hosts up="0" down="1" total="1"/>
 </runstats>
 </nmaprun>

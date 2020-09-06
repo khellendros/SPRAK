@@ -190,8 +190,8 @@ def index():
 
     return render_template("index.html")
 
-@app.route("/nmapscan")
-def nmapscan():
+@app.route("/portscan")
+def portscan():
 
     hostsarg = request.args.get("hosts")
     hosts = hostsarg.split(",")
@@ -201,10 +201,14 @@ def nmapscan():
 
     return "Scan Complete!"
 
-@app.route("/gobusterscan")
-def gobusterscan():
+@app.route("/vhostscan")
+def vhostscan():
 
-    
+    return "Under Construction!"
+
+@app.route("/dirscan")
+def dirscan():
+
     return "Under Construction!"
 
 @app.route("/hostlogs")
@@ -215,7 +219,7 @@ def hostlogs():
     return render_template("hostlogs.html", hostlist=dbhosts)
 
 @app.route("/log/<host>/ports")
-def log(host):
+def ports_log(host):
 
     scanenum = sql_query_all("SELECT timestamp, os_fingerprint FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
                          WHERE ip_address = ?", (host,))
@@ -253,3 +257,12 @@ def log(host):
         return render_template("log.html", ip_address=host, lastscan=timestamp, \
                                 osmatches=os_fingerprints, ports=portenum, scripts=scriptenum, hostscripts=hostscriptenum)
 
+@app.route("/log/<host>/vhost")
+def vhost_log(host):
+
+    return "Not implemented"
+
+@app.route("/log/<host>/dir")
+def dir_log(host):
+
+    return "Not implemented"
