@@ -160,22 +160,49 @@ def vhost_scan(hosts):
         gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" + host + ".vhost", "-u", host]
         subprocess.run(gobuster_cmd)
 
+        if ":" in host:
+            host, port_number = host.split(":")
+        else:
+            port_number = "80"
+
         with open("static/logs/" + host + ".vhost", "r") as vhostFile:
 
-            hostid = sql_query_one("SELECT id FROM hosts WHERE host=?", (host,))
+            host_id = sql_query_one("SELECT id FROM hosts WHERE host=?", (host,))
 
-            vhostenum = vhostFile.readlines()
+            if host_id is None:
 
-            if hostid is None:
-
-                c = conn.execute("INSERT INTO hosts (host, vhosts) VALUES (?);", (host, vhostenum))
+                c = conn.execute("INSERT INTO hosts (host) VALUES (?);", (host,))
                 conn.commit()
 
-            else:
+                host_id = sql_query_one("SELECT id FROM hosts WHERE host=?", (host,))
 
-                c = conn.execute("UPDATE hosts SET host=?, vhosts=?;", (host, vhostenum))
+            nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?", (host_id,))
+
+            if nmap_id is None:
+
+                c = conn.execute("INSERT INTO nmap (host_id) VALUES (?);", (host_id,))
                 conn.commit()
 
+                nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?", (host_id,))
+
+            nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE port_number=? AND protocol='tcp' AND nmap_id=?;", (port_number, nmap_id))
+
+            if nmap_ports_id is None: 
+                c = conn.execute("INSERT INTO nmap_ports (port_number, protocol, nmap_id) VALUES (?, ?, ?);", (port_number, "tcp", nmap_id))
+                conn.commit()
+
+            nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id=? AND protocol='tcp' AND nmap_id=?;", (nmap_id, protocol, nmap_id))
+
+            for line in vhostFile.readline():
+                vhostenum = line  #parse this, prob reg expression
+
+                vhost_id = sql_query_one("SELECT id FROM vhosts WHERE vhost=?;", (vhostenum,))
+
+                if vhost_id is None:
+                    c = conn.execute("INSERT INTO vhosts (vhost, nmap_ports_id) VALUES (?, ?);", (vhostenum, nmap_ports_id))
+                    conn.commit()
+
+    
     conn.close()
 
 def sql_query_all(query, args):
