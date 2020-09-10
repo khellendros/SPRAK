@@ -2,14 +2,16 @@ from flask import Flask, render_template, request, jsonify
 import sqlite3, subprocess
 import xml.etree.ElementTree as ET
 
-# TODO: Make and implement design decision for hostnames vs. ip addresses
+DBFILE = 'SPRAK.db'
+
+# TODO: 
 #       Fix DB locking on concurrent writes
 #       database datetime() wrong
 #       Implement secure coding practices.  Do we deploy this inside a container?  Nmap has to run as root for -sS
 
 def nmap_scan(hosts):
 
-    conn = sqlite3.connect('SPRAK.db')
+    conn = sqlite3.connect(DBFILE)
 
     #fast UDP and TCP scan for open ports
     for host in hosts:
@@ -46,15 +48,15 @@ def nmap_scan(hosts):
         os_fingerprint = " & ".join(os_fingerprints)
 
         #check for existing host in database
-        row = sql_query_one("SELECT id FROM hosts WHERE ip_address=?;", (host,))
+        row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))
 
         # if host doesn't exist, insert into hosts table along with nmap scan and fingerprint
         if row is None:
-            conn.execute("INSERT INTO hosts (ip_address) VALUES (?);", (host,))
+            conn.execute("INSERT INTO hosts (host) VALUES (?);", (host,))
             conn.commit()
 
             #grab new host primary key
-            host_id = sql_query_one("SELECT id FROM hosts WHERE ip_address=?;", (host,))[0]
+            host_id = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))[0]
 
             #insert new scan into nmap table or else update existing nmap scan in nmap table
             conn.execute("INSERT INTO nmap (host_id, os_fingerprint, timestamp) VALUES (?, ?, datetime('now'));", (host_id, os_fingerprint))
@@ -149,18 +151,36 @@ def nmap_scan(hosts):
 
     conn.close()
 
-def get_hosts():
+def vhost_scan(hosts):
 
-    conn = sqlite3.connect('SPRAK.db')
-    c = conn.execute("SELECT ip_address FROM hosts;")
-    iplist = c.fetchall()
-    conn.commit()
+    conn = sqlite3.connect(DBFILE)
+
+    for host in hosts:
+
+        gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" + host + ".vhost", "-u", host]
+        subprocess.run(gobuster_cmd)
+
+        with open("static/logs/" + host + ".vhost", "r") as vhostFile:
+
+            hostid = sql_query_one("SELECT id FROM hosts WHERE host=?", (host,))
+
+            vhostenum = vhostFile.readlines()
+
+            if hostid is None:
+
+                c = conn.execute("INSERT INTO hosts (host, vhosts) VALUES (?);", (host, vhostenum))
+                conn.commit()
+
+            else:
+
+                c = conn.execute("UPDATE hosts SET host=?, vhosts=?;", (host, vhostenum))
+                conn.commit()
+
     conn.close()
-    return iplist
 
 def sql_query_all(query, args):
 
-    conn = sqlite3.connect('SPRAK.db')
+    conn = sqlite3.connect(DBFILE)
     c = conn.execute(query, args)
 
     results = c.fetchall()
@@ -172,7 +192,7 @@ def sql_query_all(query, args):
 
 def sql_query_one(query, args):
 
-    conn = sqlite3.connect('SPRAK.db')
+    conn = sqlite3.connect(DBFILE)
     c = conn.execute(query, args)
 
     result = c.fetchone()
@@ -190,31 +210,34 @@ def index():
 
     return render_template("index.html")
 
-@app.route("/portscan")
-def portscan():
+@app.route("/<scantype>/<hostlist>")
+def portscan(scantype, hostlist):
 
-    hostsarg = request.args.get("hosts")
-    hosts = hostsarg.split(",")
+    hosts = hostlist.split(",")
     print(f"Received Hosts: {hosts}")
 
-    nmap_scan(hosts)
-
-    return "Scan Complete!"
-
-@app.route("/vhostscan")
-def vhostscan():
-
-    return "Under Construction!"
-
-@app.route("/dirscan")
-def dirscan():
-
-    return "Under Construction!"
+    if scantype == "portscan":
+        nmap_scan(hosts)
+        return "port scan complete."
+    elif scantype == "vhostscan":
+        vhost_scan(hosts)
+        return "vhost scan complete."
+    elif scantype == "dirscan":
+        dir_scan(hosts)
+        return "dir scan complete."
+    else:
+        return "Not Found"
 
 @app.route("/hostlogs")
 def hostlogs():
 
-    dbhosts = get_hosts()
+    conn = sqlite3.connect(DBFILE)
+    c = conn.execute("SELECT host FROM hosts;")
+
+    dbhosts = c.fetchall()
+
+    conn.commit()
+    conn.close()
 
     return render_template("hostlogs.html", hostlist=dbhosts)
 
@@ -222,17 +245,17 @@ def hostlogs():
 def ports_log(host):
 
     scanenum = sql_query_all("SELECT timestamp, os_fingerprint FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
-                         WHERE ip_address = ?", (host,))
+                         WHERE host = ?", (host,))
     
-    hostscriptenum = sql_query_all("SELECT name, output FROM nmap_host_scripts JOIN hosts ON host_id=hosts.id WHERE ip_address = ?;",(host,))
+    hostscriptenum = sql_query_all("SELECT name, output FROM nmap_host_scripts JOIN hosts ON host_id=hosts.id WHERE host = ?;",(host,))
 
     portenum = sql_query_all("SELECT port_number, protocol, state, service, version, product, \
                         extrainfo, has_script FROM hosts JOIN nmap ON hosts.id = nmap.host_id JOIN nmap_ports ON \
-                        nmap.id = nmap_ports.nmap_id WHERE ip_address = ? ORDER BY port_number;", (host,))
+                        nmap.id = nmap_ports.nmap_id WHERE host = ? ORDER BY port_number;", (host,))
 
     scriptenum = sql_query_all("SELECT port_number, protocol, name, output FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
                             JOIN nmap_ports ON nmap.id = nmap_ports.nmap_id JOIN nmap_scripts \
-                            ON nmap_ports.id = nmap_scripts.nmap_ports_id WHERE ip_address = ?; \
+                            ON nmap_ports.id = nmap_scripts.nmap_ports_id WHERE host = ?; \
                             ", (host,))
 
     timestamp = scanenum[0][0]
@@ -254,7 +277,7 @@ def ports_log(host):
             
         return jsonify(json_log)
     else:
-        return render_template("log.html", ip_address=host, lastscan=timestamp, \
+        return render_template("log.html", host=host, lastscan=timestamp, \
                                 osmatches=os_fingerprints, ports=portenum, scripts=scriptenum, hostscripts=hostscriptenum)
 
 @app.route("/log/<host>/vhost")

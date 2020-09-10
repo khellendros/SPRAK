@@ -1,0 +1,58 @@
+# Nmap 7.80 scan initiated Mon Sep  7 19:17:36 2020 as: nmap -sS -sU -A -p 135,139,445,2701,3389,49669,137 -oA static/logs/192.168.1.79 192.168.1.79
+Nmap scan report for 192.168.1.79
+Host is up (0.015s latency).
+
+PORT      STATE         SERVICE       VERSION
+135/tcp   open          msrpc         Microsoft Windows RPC
+137/tcp   filtered      netbios-ns
+139/tcp   open          netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp   open          microsoft-ds?
+2701/tcp  open          cmrcservice   Microsoft Configuration Manager Remote Control service (CmRcService.exe)
+3389/tcp  open          ms-wbt-server Microsoft Terminal Services
+| rdp-ntlm-info: 
+|   Target_Name: CHEROKEE
+|   NetBIOS_Domain_Name: CHEROKEE
+|   NetBIOS_Computer_Name: 5CG71908PS
+|   DNS_Domain_Name: cherokee.k12.ga.us
+|   DNS_Computer_Name: 5CG71908PS.cherokee.k12.ga.us
+|   DNS_Tree_Name: cherokee.k12.ga.us
+|   Product_Version: 10.0.18362
+|_  System_Time: 2020-09-07T23:20:59+00:00
+| ssl-cert: Subject: commonName=5CG71908PS.cherokee.k12.ga.us
+| Not valid before: 2020-07-21T19:26:14
+|_Not valid after:  2021-01-20T19:26:14
+|_ssl-date: 2020-09-07T23:22:24+00:00; +1m36s from scanner time.
+49669/tcp open          msrpc         Microsoft Windows RPC
+135/udp   open|filtered msrpc
+137/udp   open          netbios-ns    Microsoft Windows or Samba netbios-ns (workgroup: CHEROKEE)
+139/udp   open|filtered netbios-ssn
+445/udp   open|filtered microsoft-ds
+2701/udp  open|filtered sms-rcinfo
+3389/udp  open|filtered ms-wbt-server
+49669/udp open|filtered unknown
+MAC Address: 88:78:73:34:84:7E (Intel Corporate)
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose
+Running (JUST GUESSING): Microsoft Windows 2008|XP (86%)
+OS CPE: cpe:/o:microsoft:windows_server_2008::sp1 cpe:/o:microsoft:windows_server_2008:r2 cpe:/o:microsoft:windows_xp::sp2
+Aggressive OS guesses: Microsoft Windows Server 2008 SP1 or Windows Server 2008 R2 (86%), Microsoft Windows XP SP2 (85%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 1 hop
+Service Info: Host: 5CG71908PS; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: 1m35s, deviation: 0s, median: 1m35s
+|_nbstat: NetBIOS name: 5CG71908PS, NetBIOS user: <unknown>, NetBIOS MAC: 88:78:73:34:84:7e (Intel Corporate)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2020-09-07T23:20:59
+|_  start_date: N/A
+
+TRACEROUTE
+HOP RTT      ADDRESS
+1   15.04 ms 192.168.1.79
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Mon Sep  7 19:20:49 2020 -- 1 IP address (1 host up) scanned in 193.20 seconds
