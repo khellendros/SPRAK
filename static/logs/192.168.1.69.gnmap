@@ -1,4 +1,4 @@
-# Nmap 7.80 scan initiated Wed Sep  9 15:28:36 2020 as: nmap -sS -sU -A -p 902,5353,58310 -oA static/logs/192.168.1.69 192.168.1.69
+# Nmap 7.80 scan initiated Thu Sep 10 15:46:47 2020 as: nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.69 192.168.1.69
 Host: 192.168.1.69 (thegrid.attlocal.net)	Status: Up
-Host: 192.168.1.69 (thegrid.attlocal.net)	Ports: 902/open/tcp//ssl|vmware-auth//VMware Authentication Daemon 1.10 (Uses VNC, SOAP)/, 5353/closed/tcp//mdns///, 58310/closed/tcp//unknown///, 902/closed/udp//ideafarm-door///, 5353/open|filtered/udp//zeroconf///, 58310/open|filtered/udp/////	Seq Index: 261	IP ID Seq: All zeros
-# Nmap done at Wed Sep  9 15:31:55 2020 -- 1 IP address (1 host up) scanned in 199.02 seconds
+Host: 192.168.1.69 (thegrid.attlocal.net)	Ports: 902/open/tcp//ssl|vmware-auth//VMware Authentication Daemon 1.10 (Uses VNC, SOAP)/, 902/closed/udp//ideafarm-door///	Seq Index: 259	IP ID Seq: All zeros
+# Nmap done at Thu Sep 10 15:47:51 2020 -- 1 IP address (1 host up) scanned in 64.43 seconds

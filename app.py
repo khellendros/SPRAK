@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-import sqlite3, subprocess
+import sqlite3, subprocess, re
 import xml.etree.ElementTree as ET
 
 DBFILE = 'SPRAK.db'
@@ -157,8 +157,8 @@ def vhost_scan(hosts):
 
     for host in hosts:
 
-        gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" + host + ".vhost", "-u", host]
-        subprocess.run(gobuster_cmd)
+        #gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" + host + ".vhost", "-u", host]
+        #subprocess.run(gobuster_cmd)
 
         if ":" in host:
             host, port_number = host.split(":")
@@ -167,42 +167,58 @@ def vhost_scan(hosts):
 
         with open("static/logs/" + host + ".vhost", "r") as vhostFile:
 
-            host_id = sql_query_one("SELECT id FROM hosts WHERE host=?", (host,))
-
-            if host_id is None:
+            row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))
+            
+            if row is None:
 
                 c = conn.execute("INSERT INTO hosts (host) VALUES (?);", (host,))
                 conn.commit()
 
-                host_id = sql_query_one("SELECT id FROM hosts WHERE host=?", (host,))
+                host_id = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))[0]
 
-            nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?", (host_id,))
+            else:
 
-            if nmap_id is None:
+                host_id = row[0]
+
+            row = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))
+            
+            if row is None:
 
                 c = conn.execute("INSERT INTO nmap (host_id) VALUES (?);", (host_id,))
                 conn.commit()
 
-                nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?", (host_id,))
+                nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))[0]
 
-            nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE port_number=? AND protocol='tcp' AND nmap_id=?;", (port_number, nmap_id))
+            else:
 
-            if nmap_ports_id is None: 
+                nmap_id = row[0]
+
+            row = sql_query_one("SELECT id FROM nmap_ports WHERE port_number=? AND protocol='tcp' AND nmap_id=?;", (port_number, nmap_id))
+
+            if row is None: 
+
                 c = conn.execute("INSERT INTO nmap_ports (port_number, protocol, nmap_id) VALUES (?, ?, ?);", (port_number, "tcp", nmap_id))
                 conn.commit()
+           
+                nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id=? AND protocol='tcp' AND nmap_id=?;", (nmap_id, nmap_id))[0]
+             
+            else:
 
-            nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id=? AND protocol='tcp' AND nmap_id=?;", (nmap_id, protocol, nmap_id))
+                nmap_ports_id = row[0]
 
-            for line in vhostFile.readline():
-                vhostenum = line  #parse this, prob reg expression
+            for line in vhostFile:
+                vhost = re.search("Found: (.*) \(Status: (.*)\).*", line)
+                #parse this, prob reg expression: Found: www.new.hurshfilms.com (Status: 200) [Size: 272]
 
-                vhost_id = sql_query_one("SELECT id FROM vhosts WHERE vhost=?;", (vhostenum,))
+                row = sql_query_one("SELECT id FROM vhosts WHERE vhost=?;", (vhost.group(1),))
 
-                if vhost_id is None:
-                    c = conn.execute("INSERT INTO vhosts (vhost, nmap_ports_id) VALUES (?, ?);", (vhostenum, nmap_ports_id))
-                    conn.commit()
+                if row is None:
+                    c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (vhost.group(1), vhost.group(2), nmap_ports_id))
+                else:
+                    c = conn.execute("UPDATE vhosts SET status=? WHERE id=?;", (vhost.group(2), row[0]))
+                
+                conn.commit()
 
-    
     conn.close()
 
 def sql_query_all(query, args):

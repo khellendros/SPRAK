@@ -1,28 +1,14 @@
-# Nmap 7.80 scan initiated Wed Sep  9 15:28:36 2020 as: nmap -sS -sU -A -p 902,5353,58310 -oA static/logs/192.168.1.69 192.168.1.69
+# Nmap 7.80 scan initiated Thu Sep 10 15:46:47 2020 as: nmap -sS -sU -A -p 902 -oA static/logs/192.168.1.69 192.168.1.69
 Nmap scan report for thegrid.attlocal.net (192.168.1.69)
-Host is up (0.000068s latency).
+Host is up (0.000034s latency).
 
-PORT      STATE         SERVICE         VERSION
-902/tcp   open          ssl/vmware-auth VMware Authentication Daemon 1.10 (Uses VNC, SOAP)
-5353/tcp  closed        mdns
-58310/tcp closed        unknown
-902/udp   closed        ideafarm-door
-5353/udp  open|filtered zeroconf
-58310/udp open|filtered unknown
-No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
-TCP/IP fingerprint:
-OS:SCAN(V=7.80%E=4%D=9/9%OT=902%CT=5353%CU=902%PV=Y%DS=0%DC=L%G=Y%TM=5F592D
-OS:AB%P=x86_64-pc-linux-gnu)SEQ(SP=105%GCD=1%ISR=10A%TI=Z%CI=Z%II=I%TS=A)OP
-OS:S(O1=MFFD7ST11NWA%O2=MFFD7ST11NWA%O3=MFFD7NNT11NWA%O4=MFFD7ST11NWA%O5=MF
-OS:FD7ST11NWA%O6=MFFD7ST11)WIN(W1=FFCB%W2=FFCB%W3=FFCB%W4=FFCB%W5=FFCB%W6=F
-OS:FCB)ECN(R=Y%DF=Y%T=40%W=FFD7%O=MFFD7NNSNWA%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%
-OS:A=S+%F=AS%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0
-OS:%Q=)T5(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S
-OS:=A%A=Z%F=R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R
-OS:=Y%DF=N%T=40%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N
-OS:%T=40%CD=S)
-
+PORT    STATE  SERVICE         VERSION
+902/tcp open   ssl/vmware-auth VMware Authentication Daemon 1.10 (Uses VNC, SOAP)
+902/udp closed ideafarm-door
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Aggressive OS guesses: Linux 2.6.32 (96%), Linux 3.8 - 4.14 (95%), Linux 3.1 (95%), Linux 3.2 (95%), AXIS 210A or 211 Network Camera (Linux 2.6.17) (94%), Linux 3.7 - 3.11 (93%), Linux 3.10 (93%), Linux 3.8 - 3.9 (93%), Linux 3.7 - 3.10 (93%), ASUS RT-N56U WAP (Linux 3.4) (93%)
+No exact OS matches for host (test conditions non-ideal).
 Network Distance: 0 hops
 
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-# Nmap done at Wed Sep  9 15:31:55 2020 -- 1 IP address (1 host up) scanned in 199.02 seconds
+# Nmap done at Thu Sep 10 15:47:51 2020 -- 1 IP address (1 host up) scanned in 64.43 seconds
