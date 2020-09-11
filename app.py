@@ -159,13 +159,14 @@ def vhost_scan(hosts):
 
     for host in hosts:
 
-        gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" + host + ".vhost", "-u", host]
-        subprocess.run(gobuster_cmd)
-
         if ":" in host:
             host, port_number = host.split(":")
         else:
             port_number = "80"
+
+        gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" \
+                        + host + ":" + port_number + ".vhost", "-u", host]
+        subprocess.run(gobuster_cmd)
 
         with open("static/logs/" + host + ".vhost", "r") as vhostFile:
 
@@ -225,15 +226,15 @@ def dir_scan(hosts):
 
     for host in hosts:
 
-        for wordlist in DIR_WORDLISTS:
-            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-k", "-o", "static/logs/" + host + ".dir", "-u", host]
-            subprocess.run(gobuster_cmd)
+        #pull host and port number from url if formatted like so - google.com:5000 else default to port 80
+        if ":" in host:
+            host, port_number = host.split(":")
+        else:
+            port_number = "80"
 
-            #pull host and port number from url if formatted like so - google.com:5000 else default to port 80
-            if ":" in host:
-                host, port_number = host.split(":")
-            else:
-                port_number = "80"
+        for wordlist in DIR_WORDLISTS:
+            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-k", "-o", "static/logs/" + host + ":" + port_number + ".dir", "-u", host]
+            subprocess.run(gobuster_cmd)
 
             with open("static/logs/" + host + ".dir", "r") as dirFile:
 
