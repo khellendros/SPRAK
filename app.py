@@ -170,40 +170,31 @@ def vhost_scan(hosts):
             row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))
             
             if row is None:
-
                 c = conn.execute("INSERT INTO hosts (host) VALUES (?);", (host,))
                 conn.commit()
 
                 host_id = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))[0]
-
             else:
-
                 host_id = row[0]
 
             row = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))
             
             if row is None:
-
                 c = conn.execute("INSERT INTO nmap (host_id) VALUES (?);", (host_id,))
                 conn.commit()
 
                 nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))[0]
-
             else:
-
                 nmap_id = row[0]
 
             row = sql_query_one("SELECT id FROM nmap_ports WHERE port_number=? AND protocol='tcp' AND nmap_id=?;", (port_number, nmap_id))
 
             if row is None: 
-
                 c = conn.execute("INSERT INTO nmap_ports (port_number, protocol, nmap_id) VALUES (?, ?, ?);", (port_number, "tcp", nmap_id))
                 conn.commit()
            
-                nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id=? AND protocol='tcp' AND nmap_id=?;", (nmap_id, nmap_id))[0]
-             
+                nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id=? AND protocol='tcp' AND nmap_id=?;", (nmap_id, nmap_id))[0]  
             else:
-
                 nmap_ports_id = row[0]
 
             
@@ -221,6 +212,92 @@ def vhost_scan(hosts):
                     c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (vhost.group(1), vhost.group(2), nmap_ports_id))
                 else:
                     c = conn.execute("UPDATE vhosts SET status=? WHERE id=?;", (vhost.group(2), row[0]))
+                
+                conn.commit()
+
+    conn.close()
+
+def dir_scan(hosts):
+
+    conn = sqlite3.connect(DBFILE)
+
+    for host in hosts:
+
+        gobuster_cmd = ["gobuster", "dir", "-w", "wordlists/raft-large-directories.txt, "-k", "-o", "static/logs/" + host + ".dir", "-u", host]
+        subprocess.run(gobuster_cmd)
+
+        #pull host and port number from url if formatted like so - google.com:5000 else default to port 80
+        if ":" in host:
+            host, port_number = host.split(":")
+        else:
+            port_number = "80"
+
+        with open("static/logs/" + host + ".dir", "r") as dirFile:
+
+            #query to check if this host is already a vhost so we don't create duplicates in both vhosts and hosts table
+            row = sql_query_one("SELECT id FROM vhosts WHERE vhost=?;", (host,))
+
+            #if vhost exists, grab the id from host table, else query to see if the host is in the hosts table
+            if row is not None:
+                row = sql_query_one("SELECT id FROM hosts JOIN nmap ON hosts.id=nmap.host_id JOIN nmap_ports ON nmap.id=nmap_id JOIN vhosts ON nmap_ports.id=nmap_ports_id WHERE vhost=? AND port_number=;", (host, port_number))
+            else:
+                row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))
+            
+            #create new entry in hosts table if host doesn't exist, else grab the id of the host
+            if row is None:
+                c = conn.execute("INSERT INTO hosts (host) VALUES (?);", (host,))
+                conn.commit()
+
+                host_id = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))[0]
+            else:
+                host_id = row[0]
+
+            #try to grab id of port scan in nmap table for host
+            row = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))
+            
+            #create nmap scan entry if one doesn't exist for host, else use existing nmap table id of scan
+            if row is None:
+                c = conn.execute("INSERT INTO nmap (host_id) VALUES (?);", (host_id,))
+                conn.commit()
+
+                nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))[0]
+            else:
+                nmap_id = row[0]
+
+            #try to grab id of port number from nmap_ports table for associated host/scan, will use this id as foreign key in vhosts table
+            row = sql_query_one("SELECT id FROM nmap_ports WHERE port_number=? AND protocol='tcp' AND nmap_id=?;", (port_number, nmap_id))
+
+            #if port entry doesn't exist, manually create new one to link to vhost
+            if row is None: 
+                c = conn.execute("INSERT INTO nmap_ports (port_number, protocol, nmap_id) VALUES (?, ?, ?);", (port_number, "tcp", nmap_id))
+                conn.commit()
+           
+                nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id=? AND protocol='tcp' AND nmap_id=?;", (nmap_id, nmap_id))[0]  
+            else:
+                nmap_ports_id = row[0]
+
+            #try to grab id from vhosts
+            row = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (host, nmap_ports_id))
+
+            #if vhost doesn't exist, create entry else grab id from table
+            if row is None:
+                c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (host, "200", nmap_ports_id))
+                conn.commit()
+
+                vhost_id = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (host, nmap_ports_id))[0]
+            else:
+                vhost_id = row[0]
+
+            #open results file from dir scan and create new entries in dir table if they don't exist
+            for line in dirFile:
+                path = re.search("Found: (.*) \(Status: (.*)\).*", line)
+
+                row = sql_query_one("SELECT id FROM dir WHERE path=? AND vhost_id=?;", (path.group(1), vhost_id))
+
+                if row is None:
+                    c = conn.execute("INSERT INTO dir (path, status, vhost_id) VALUES (?, ?, ?);", (path.group(1), path.group(2), vhost_id))
+                else:
+                    c = conn.execute("UPDATE dir SET status=? WHERE id=?;", (path.group(2), row[0]))
                 
                 conn.commit()
 
