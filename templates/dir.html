@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<table class="table table-dark">
+    <tr>
+        <th>PATH</th>
+        <th>STATUS</th>
+    </tr>
+    {% for row in direnum %}
+        <tr>
+            <td><a href="http://{{ row[0] }}:{{ port }}{{ row[1] }}">http://{{ row[0] }}:{{ port }}{{ row[1] }}</a></td>
+            <td>{{ row[2] }}</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

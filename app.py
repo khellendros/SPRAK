@@ -3,6 +3,7 @@ import sqlite3, subprocess, re
 import xml.etree.ElementTree as ET
 
 DBFILE = 'SPRAK.db'
+DIR_WORDLISTS = ["wordlists/raft-large-directories.txt", "wordlists/raft-large-files.txt", "wordlists/raft-large-words.txt"]
 
 # TODO: 
 #       Fix DB locking on concurrent writes
@@ -223,84 +224,85 @@ def dir_scan(hosts):
 
     for host in hosts:
 
-        gobuster_cmd = ["gobuster", "dir", "-w", "wordlists/raft-large-directories.txt", "-k", "-o", "static/logs/" + host + ".dir", "-u", host]
-        subprocess.run(gobuster_cmd)
+        for wordlist in DIR_WORDLISTS:
+            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-k", "-o", "static/logs/" + host + ".dir", "-u", host]
+            subprocess.run(gobuster_cmd)
 
-        #pull host and port number from url if formatted like so - google.com:5000 else default to port 80
-        if ":" in host:
-            host, port_number = host.split(":")
-        else:
-            port_number = "80"
-
-        with open("static/logs/" + host + ".dir", "r") as dirFile:
-
-            #query to check if this host is already a vhost so we don't create duplicates in both vhosts and hosts table
-            row = sql_query_one("SELECT id FROM vhosts WHERE vhost=?;", (host,))
-
-            #if vhost exists, grab the id from host table, else query to see if the host is in the hosts table
-            if row is not None:
-                row = sql_query_one("SELECT hosts.id FROM hosts JOIN nmap ON hosts.id=nmap.host_id JOIN nmap_ports ON nmap.id=nmap_id JOIN vhosts \
-                                     ON nmap_ports.id=nmap_ports_id WHERE vhost=? AND port_number=?;", (host, port_number))
+            #pull host and port number from url if formatted like so - google.com:5000 else default to port 80
+            if ":" in host:
+                host, port_number = host.split(":")
             else:
-                row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))
-            
-            #create new entry in hosts table if host doesn't exist, else grab the id of the host
-            if row is None:
-                c = conn.execute("INSERT INTO hosts (host) VALUES (?);", (host,))
-                conn.commit()
+                port_number = "80"
 
-                host_id = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))[0]
-            else:
-                host_id = row[0]
+            with open("static/logs/" + host + ".dir", "r") as dirFile:
 
-            #try to grab id of port scan in nmap table for host
-            row = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))
-            
-            #create nmap scan entry if one doesn't exist for host, else use existing nmap table id of scan
-            if row is None:
-                c = conn.execute("INSERT INTO nmap (host_id) VALUES (?);", (host_id,))
-                conn.commit()
+                #query to check if this host is already a vhost so we don't create duplicates in both vhosts and hosts table
+                row = sql_query_one("SELECT id FROM vhosts WHERE vhost=?;", (host,))
 
-                nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))[0]
-            else:
-                nmap_id = row[0]
-
-            #try to grab id of port number from nmap_ports table for associated host/scan, will use this id as foreign key in vhosts table
-            row = sql_query_one("SELECT id FROM nmap_ports WHERE port_number=? AND protocol='tcp' AND nmap_id=?;", (port_number, nmap_id))
-
-            #if port entry doesn't exist, manually create new one to link to vhost
-            if row is None: 
-                c = conn.execute("INSERT INTO nmap_ports (port_number, protocol, nmap_id) VALUES (?, ?, ?);", (port_number, "tcp", nmap_id))
-                conn.commit()
-           
-                nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id=? AND protocol='tcp' AND nmap_id=?;", (nmap_id, nmap_id))[0]  
-            else:
-                nmap_ports_id = row[0]
-
-            #try to grab id from vhosts
-            row = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (host, nmap_ports_id))
-
-            #if vhost doesn't exist, create entry else grab id from table
-            if row is None:
-                c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (host, "200", nmap_ports_id))
-                conn.commit()
-
-                vhost_id = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (host, nmap_ports_id))[0]
-            else:
-                vhost_id = row[0]
-
-            #open results file from dir scan and create new entries in dir table if they don't exist
-            for line in dirFile:
-                path = re.search("(.*) \(Status: (.*)\).*", line)
-
-                row = sql_query_one("SELECT id FROM dir WHERE path=? AND vhost_id=?;", (path.group(1), vhost_id))
-
-                if row is None:
-                    c = conn.execute("INSERT INTO dir (path, status, vhost_id) VALUES (?, ?, ?);", (path.group(1), path.group(2), vhost_id))
+                #if vhost exists, grab the id from host table, else query to see if the host is in the hosts table
+                if row is not None:
+                    row = sql_query_one("SELECT hosts.id FROM hosts JOIN nmap ON hosts.id=nmap.host_id JOIN nmap_ports ON nmap.id=nmap_id JOIN vhosts \
+                                        ON nmap_ports.id=nmap_ports_id WHERE vhost=? AND port_number=?;", (host, port_number))
                 else:
-                    c = conn.execute("UPDATE dir SET status=? WHERE id=?;", (path.group(2), row[0]))
+                    row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))
                 
-                conn.commit()
+                #create new entry in hosts table if host doesn't exist, else grab the id of the host
+                if row is None:
+                    c = conn.execute("INSERT INTO hosts (host) VALUES (?);", (host,))
+                    conn.commit()
+
+                    host_id = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))[0]
+                else:
+                    host_id = row[0]
+
+                #try to grab id of port scan in nmap table for host
+                row = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))
+                
+                #create nmap scan entry if one doesn't exist for host, else use existing nmap table id of scan
+                if row is None:
+                    c = conn.execute("INSERT INTO nmap (host_id) VALUES (?);", (host_id,))
+                    conn.commit()
+
+                    nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))[0]
+                else:
+                    nmap_id = row[0]
+
+                #try to grab id of port number from nmap_ports table for associated host/scan, will use this id as foreign key in vhosts table
+                row = sql_query_one("SELECT id FROM nmap_ports WHERE port_number=? AND protocol='tcp' AND nmap_id=?;", (port_number, nmap_id))
+
+                #if port entry doesn't exist, manually create new one to link to vhost
+                if row is None: 
+                    c = conn.execute("INSERT INTO nmap_ports (port_number, protocol, nmap_id) VALUES (?, ?, ?);", (port_number, "tcp", nmap_id))
+                    conn.commit()
+            
+                    nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id=? AND protocol='tcp' AND nmap_id=?;", (nmap_id, nmap_id))[0]  
+                else:
+                    nmap_ports_id = row[0]
+
+                #try to grab id from vhosts
+                row = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (host, nmap_ports_id))
+
+                #if vhost doesn't exist, create entry else grab id from table
+                if row is None:
+                    c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (host, "200", nmap_ports_id))
+                    conn.commit()
+
+                    vhost_id = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (host, nmap_ports_id))[0]
+                else:
+                    vhost_id = row[0]
+
+                #open results file from dir scan and create new entries in dir table if they don't exist
+                for line in dirFile:
+                    path = re.search("(.*) \(Status: (.*)\).*", line)
+
+                    row = sql_query_one("SELECT id FROM dir WHERE path=? AND vhost_id=?;", (path.group(1), vhost_id))
+
+                    if row is None:
+                        c = conn.execute("INSERT INTO dir (path, status, vhost_id) VALUES (?, ?, ?);", (path.group(1), path.group(2), vhost_id))
+                    else:
+                        c = conn.execute("UPDATE dir SET status=? WHERE id=?;", (path.group(2), row[0]))
+                    
+                    conn.commit()
 
     conn.close()
 
@@ -420,9 +422,40 @@ def vhost_log(host):
                                JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON hosts.id=nmap.host_id \
                                WHERE port_number=? AND host=?;", (port_number, host))
 
-    return render_template("vhosts.html", vhosts=vhostenum)
+    direnum = sql_query_all("SELECT dir.id, vhost FROM dir JOIN vhosts ON dir.vhost_id=vhosts.id JOIN \
+                                 nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id \
+                                 JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON hosts.id=nmap.host_id \
+                                 WHERE port_number=? AND host=?;", (port_number, host))
+
+    if request.content_type == "application/json" and request.accept_mimetypes.accept_json:
+        json_log = []
+
+        for vhost in vhostenum:
+            json_log.append({vhost[0] : vhost[1]})
+            
+        return jsonify(json_log)
+    else:
+        return render_template("vhosts.html", vhosts=vhostenum, direnum=direnum, port=port_number)
 
 @app.route("/log/<host>/dir")
 def dir_log(host):
 
-    return "Not implemented"
+    if ":" in host:
+        host, port_number = host.split(":")
+    else:
+        port_number = "80"
+
+    direnum = sql_query_all("SELECT vhost, path, dir.status FROM dir JOIN vhosts ON dir.vhost_id=vhosts.id JOIN \
+                               nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id \
+                               JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON hosts.id=nmap.host_id \
+                               WHERE port_number=? AND host=?;", (port_number, host))
+
+    if request.content_type == "application/json" and request.accept_mimetypes.accept_json:
+        json_log = []
+
+        for path in direnum:
+            json_log.append({path[1] : path[2]})
+            
+        return jsonify(json_log)
+    else:
+        return render_template("dir.html", direnum=direnum, port=port_number)

@@ -10,7 +10,11 @@
         <tr>
         {% for elem in row %}
             <td>
-                {{ elem }}
+                    {% if elem in direnum[1] %}
+                        <a href="/log/{{ elem }}:{{ port }}/dir">{{ elem }}</a>
+                    {% else %}
+                        {{ elem }}
+                    {% endif %}
             </td>
         {% endfor %}
     </tr>
