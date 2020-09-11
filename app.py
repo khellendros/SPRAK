@@ -206,11 +206,16 @@ def vhost_scan(hosts):
 
                 nmap_ports_id = row[0]
 
+            
+            row = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (host, nmap_ports_id))
+
+            if row is None:
+                c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (host, "200", nmap_ports_id))
+
             for line in vhostFile:
                 vhost = re.search("Found: (.*) \(Status: (.*)\).*", line)
-                #parse this, prob reg expression: Found: www.new.hurshfilms.com (Status: 200) [Size: 272]
 
-                row = sql_query_one("SELECT id FROM vhosts WHERE vhost=?;", (vhost.group(1),))
+                row = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (vhost.group(1), nmap_ports_id))
 
                 if row is None:
                     c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (vhost.group(1), vhost.group(2), nmap_ports_id))
