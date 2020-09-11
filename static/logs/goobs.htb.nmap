@@ -1,0 +1,88 @@
+# Nmap 7.80 scan initiated Fri Sep 11 14:10:11 2020 as: nmap -sS -A -p 22,25,80,111,135,137,138,139,445 -oA static/logs/goobs.htb goobs.htb
+Nmap scan report for goobs.htb (23.202.231.169)
+Host is up (0.020s latency).
+Other addresses for goobs.htb (not scanned): 23.217.138.110
+rDNS record for 23.202.231.169: a23-202-231-169.deploy.static.akamaitechnologies.com
+
+PORT    STATE    SERVICE      VERSION
+22/tcp  open     ssh          OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 62:b5:59:52:37:d5:4d:cb:f9:aa:91:58:10:87:08:df (RSA)
+|   256 d1:23:b1:96:eb:66:5f:5f:09:64:b9:27:0e:9e:c5:e4 (ECDSA)
+|_  256 83:4d:29:f7:af:40:5b:2f:bf:f1:4b:6c:73:b2:9c:be (ED25519)
+25/tcp  filtered smtp
+80/tcp  open     http
+| fingerprint-strings: 
+|   FourOhFourRequest: 
+|     HTTP/1.0 200 OK
+|     Date: Fri, 11 Sep 2020 18:12:04 GMT
+|     Content-Length: 0
+|   GenericLines, Help, Kerberos, LDAPSearchReq, LPDString, RTSPRequest, SIPOptions, SSLSessionReq, TLSSessionReq, TerminalServerCookie: 
+|     HTTP/1.1 400 Bad Request
+|     Content-Type: text/plain; charset=utf-8
+|     Connection: close
+|     Request
+|   GetRequest, HTTPOptions: 
+|     HTTP/1.0 200 OK
+|     Date: Fri, 11 Sep 2020 18:11:59 GMT
+|_    Content-Length: 0
+|_http-title: Site doesn't have a title (text/html; charset=utf-8).
+111/tcp filtered rpcbind
+135/tcp filtered msrpc
+137/tcp filtered netbios-ns
+138/tcp filtered netbios-dgm
+139/tcp filtered netbios-ssn
+445/tcp filtered microsoft-ds
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port80-TCP:V=7.80%I=7%D=9/11%Time=5F5BBD8C%P=x86_64-pc-linux-gnu%r(GetR
+SF:equest,4B,"HTTP/1\.0\x20200\x20OK\r\nDate:\x20Fri,\x2011\x20Sep\x202020
+SF:\x2018:11:59\x20GMT\r\nContent-Length:\x200\r\n\r\n")%r(HTTPOptions,4B,
+SF:"HTTP/1\.0\x20200\x20OK\r\nDate:\x20Fri,\x2011\x20Sep\x202020\x2018:11:
+SF:59\x20GMT\r\nContent-Length:\x200\r\n\r\n")%r(RTSPRequest,67,"HTTP/1\.1
+SF:\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=ut
+SF:f-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request")%r(FourOhFour
+SF:Request,4B,"HTTP/1\.0\x20200\x20OK\r\nDate:\x20Fri,\x2011\x20Sep\x20202
+SF:0\x2018:12:04\x20GMT\r\nContent-Length:\x200\r\n\r\n")%r(GenericLines,6
+SF:7,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x
+SF:20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request")%
+SF:r(Help,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/
+SF:plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Re
+SF:quest")%r(SSLSessionReq,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConte
+SF:nt-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\
+SF:n400\x20Bad\x20Request")%r(TerminalServerCookie,67,"HTTP/1\.1\x20400\x2
+SF:0Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nCon
+SF:nection:\x20close\r\n\r\n400\x20Bad\x20Request")%r(TLSSessionReq,67,"HT
+SF:TP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20cha
+SF:rset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request")%r(Ker
+SF:beros,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/p
+SF:lain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Req
+SF:uest")%r(LPDString,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Ty
+SF:pe:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\
+SF:x20Bad\x20Request")%r(LDAPSearchReq,67,"HTTP/1\.1\x20400\x20Bad\x20Requ
+SF:est\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20
+SF:close\r\n\r\n400\x20Bad\x20Request")%r(SIPOptions,67,"HTTP/1\.1\x20400\
+SF:x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nC
+SF:onnection:\x20close\r\n\r\n400\x20Bad\x20Request");
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose
+Running: Linux 3.X|4.X
+OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
+OS details: Linux 3.2 - 4.9
+Network Distance: 10 hops
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE (using port 80/tcp)
+HOP RTT      ADDRESS
+1   2.07 ms  dsldevice.attlocal.net (192.168.1.254)
+2   12.59 ms 172-125-148-1.lightspeed.tukrga.sbcglobal.net (172.125.148.1)
+3   ...
+4   7.10 ms  12.242.113.45
+5   3.65 ms  192.205.36.158
+6   7.42 ms  ae-6.r23.atlnga05.us.bb.gin.ntt.net (129.250.5.59)
+7   ...
+8   21.07 ms ae-0.a03.asbnva02.us.bb.gin.ntt.net (129.250.5.194)
+9   ...
+10  21.08 ms a23-202-231-169.deploy.static.akamaitechnologies.com (23.202.231.169)
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Fri Sep 11 14:11:48 2020 -- 1 IP address (1 host up) scanned in 97.63 seconds

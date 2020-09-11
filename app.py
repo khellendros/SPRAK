@@ -3,7 +3,7 @@ import sqlite3, subprocess, re
 import xml.etree.ElementTree as ET
 
 DBFILE = 'SPRAK.db'
-DIR_WORDLISTS = ["wordlists/raft-large-directories.txt", "wordlists/raft-large-files.txt", "wordlists/raft-large-words.txt"]
+DIR_WORDLISTS = ["wordlists/raft-large-directories.txt"]#, "wordlists/raft-large-files.txt", "wordlists/raft-large-words.txt"]
 
 # TODO: 
 #       Fix DB locking on concurrent writes
@@ -16,6 +16,7 @@ def nmap_scan(hosts):
 
     #fast UDP and TCP scan for open ports
     for host in hosts:
+        
         nmap_cmd = ["nmap", "-sS", "-T4", "-p", "-", "-oA", "static/logs/" + host, host]
         print("Nmap Scan Phase 1: ", nmap_cmd)
         subprocess.run(nmap_cmd)
@@ -353,6 +354,31 @@ def portscan(scantype, hostlist):
     elif scantype == "dirscan":
         dir_scan(hosts)
         return "dir scan complete."
+    elif scantype == "autoscan":
+        #nmap_scan(hosts)
+        http_hosts = []
+        vhosts = []
+
+        for host in hosts:
+            row = sql_query_all("SELECT nmap_ports.id, port_number, nmap_id FROM nmap_ports \
+                                             JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON nmap.host_id=hosts.id \
+                                             WHERE service='http' AND host=?;",(host,))
+            if row is not None:
+                http_hosts.append(host + ":" + row[0][1])
+
+        #vhost_scan(http_hosts)
+
+        for host in hosts:
+            row = sql_query_all("SELECT vhost, port_number FROM vhosts JOIN nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id \
+                                    JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON nmap.host_id=hosts.id \
+                                    WHERE host=? ", (host,))
+            
+            if row is not None:
+                vhosts.append(row[0][0] + ":" + row[0][1])
+
+        dir_scan(vhosts)
+
+        return "auto scan complete"
     else:
         return "Not Found"
 
@@ -387,9 +413,16 @@ def ports_log(host):
 
     vhostscans = sql_query_all("SELECT port_number FROM vhosts JOIN nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id WHERE vhost=?;", (host,))
 
+    if scanenum == []:
+        return "Does not exist!"
+
+    if vhostscans == []:
+        vhostscans = "NULL"
+
     timestamp = scanenum[0][0]
     os_fingerprints = scanenum[0][1]
 
+    
     if request.content_type == "application/json" and request.accept_mimetypes.accept_json:
         json_log = [{ "Host": host, "Last Scan": timestamp, "OS Fingerprints": os_fingerprints}]
 
@@ -435,7 +468,7 @@ def vhost_log(host):
             
         return jsonify(json_log)
     else:
-        return render_template("vhosts.html", vhosts=vhostenum, direnum=direnum, port=port_number)
+        return render_template("vhosts.html", vhosts=vhostenum, direnum=direnum, port=port_number, host=host)
 
 @app.route("/log/<host>/dir")
 def dir_log(host):
@@ -445,12 +478,14 @@ def dir_log(host):
     else:
         port_number = "80"
 
-    direnum = sql_query_all("SELECT vhost, path, dir.status FROM dir JOIN vhosts ON dir.vhost_id=vhosts.id JOIN \
+    direnum = sql_query_all("SELECT path, dir.status, host FROM dir JOIN vhosts ON dir.vhost_id=vhosts.id JOIN \
                                nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id \
                                JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON hosts.id=nmap.host_id \
-                               WHERE port_number=? AND host=?;", (port_number, host))
+                               WHERE port_number=? AND vhost=? ORDER BY dir.status;", (port_number, host))
 
-    if request.content_type == "application/json" and request.accept_mimetypes.accept_json:
+    if direnum == []:
+        return "Does not exist!"
+    elif request.content_type == "application/json" and request.accept_mimetypes.accept_json:
         json_log = []
 
         for path in direnum:
@@ -458,4 +493,4 @@ def dir_log(host):
             
         return jsonify(json_log)
     else:
-        return render_template("dir.html", direnum=direnum, port=port_number)
+        return render_template("dir.html", vhost=host, direnum=direnum, port=port_number)

@@ -1,0 +1,4 @@
+# Nmap 7.80 scan initiated Fri Sep 11 14:10:11 2020 as: nmap -sS -A -p 22,25,80,111,135,137,138,139,445 -oA static/logs/goobs.htb goobs.htb
+Host: 23.202.231.169 (a23-202-231-169.deploy.static.akamaitechnologies.com)	Status: Up
+Host: 23.202.231.169 (a23-202-231-169.deploy.static.akamaitechnologies.com)	Ports: 22/open/tcp//ssh//OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)/, 25/filtered/tcp//smtp///, 80/open/tcp//http///, 111/filtered/tcp//rpcbind///, 135/filtered/tcp//msrpc///, 137/filtered/tcp//netbios-ns///, 138/filtered/tcp//netbios-dgm///, 139/filtered/tcp//netbios-ssn///, 445/filtered/tcp//microsoft-ds///	OS: Linux 3.2 - 4.9	Seq Index: 259	IP ID Seq: All zeros
+# Nmap done at Fri Sep 11 14:11:48 2020 -- 1 IP address (1 host up) scanned in 97.63 seconds
