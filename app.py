@@ -3,7 +3,7 @@ import sqlite3, subprocess, re
 import xml.etree.ElementTree as ET
 
 DBFILE = 'SPRAK.db'
-DIR_WORDLISTS = ["wordlists/raft-large-directories.txt"]#, "wordlists/raft-large-files.txt", "wordlists/raft-large-words.txt"]
+DIR_WORDLISTS = ["wordlists/raft-large-directories.txt", "wordlists/raft-large-files.txt", "wordlists/raft-large-words.txt"]
 
 # TODO: 
 #       Fix DB locking on concurrent writes
@@ -355,7 +355,7 @@ def portscan(scantype, hostlist):
         dir_scan(hosts)
         return "dir scan complete."
     elif scantype == "autoscan":
-        #nmap_scan(hosts)
+        nmap_scan(hosts)
         http_hosts = []
         vhosts = []
 
@@ -366,17 +366,20 @@ def portscan(scantype, hostlist):
             if row is not None:
                 http_hosts.append(host + ":" + row[0][1])
 
-        #vhost_scan(http_hosts)
+        if http_hosts != []:
+            vhost_scan(http_hosts)
 
-        for host in hosts:
-            row = sql_query_all("SELECT vhost, port_number FROM vhosts JOIN nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id \
-                                    JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON nmap.host_id=hosts.id \
-                                    WHERE host=? ", (host,))
+            for host in hosts:
+                row = sql_query_all("SELECT vhost, port_number, status FROM vhosts JOIN nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id \
+                                     JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON nmap.host_id=hosts.id \
+                                     WHERE host=? ", (host,))
             
-            if row is not None:
-                vhosts.append(row[0][0] + ":" + row[0][1])
+                if row is not None:
+                    if row[0][2] != "400" and row[0][2] != "404":
+                        vhosts.append(row[0][0] + ":" + row[0][1])
 
-        dir_scan(vhosts)
+            if vhosts != []:
+                dir_scan(vhosts)
 
         return "auto scan complete"
     else:
