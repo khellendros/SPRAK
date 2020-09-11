@@ -47,7 +47,15 @@
                 {% elif elem == "no script" %}
                     </tr>
                 {% elif elem != "NULL" %}
-                    <td>{{ elem }}</td>
+                    {% for row2 in vhostscans %}
+                        {% for portnum in row2 %}
+                            {% if portnum == elem %}
+                                <td><a href="/log/{{ host }}:{{ elem }}/vhosts"><button type="button" class="btn btn-warning btn-lg">{{ elem }}</button></a></td>
+                            {% else %}
+                                <td>{{ elem }}</td>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
                 {% else %}
                     <td>&nbsp;-&nbsp;</td>
             {% endif %}

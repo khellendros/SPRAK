@@ -15,7 +15,7 @@ def nmap_scan(hosts):
 
     #fast UDP and TCP scan for open ports
     for host in hosts:
-        nmap_cmd = ["nmap", "-sS", "-sU", "-T4", "-p", "-", "-oA", "static/logs/" + host, host]
+        nmap_cmd = ["nmap", "-sS", "-T4", "-p", "-", "-oA", "static/logs/" + host, host]
         print("Nmap Scan Phase 1: ", nmap_cmd)
         subprocess.run(nmap_cmd)
 
@@ -31,7 +31,7 @@ def nmap_scan(hosts):
         portarg = ",".join(openports)
         
         if len(openports) > 0:
-            nmap_cmd = ["nmap", "-sS", "-sU", "-A", "-p", portarg, "-oA", "static/logs/" + host, host]
+            nmap_cmd = ["nmap", "-sS", "-A", "-p", portarg, "-oA", "static/logs/" + host, host]
             print("Nmap Scan Phase 2: ", nmap_cmd)
             subprocess.run(nmap_cmd)
 
@@ -157,8 +157,8 @@ def vhost_scan(hosts):
 
     for host in hosts:
 
-        #gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" + host + ".vhost", "-u", host]
-        #subprocess.run(gobuster_cmd)
+        gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" + host + ".vhost", "-u", host]
+        subprocess.run(gobuster_cmd)
 
         if ":" in host:
             host, port_number = host.split(":")
@@ -223,7 +223,7 @@ def dir_scan(hosts):
 
     for host in hosts:
 
-        gobuster_cmd = ["gobuster", "dir", "-w", "wordlists/raft-large-directories.txt, "-k", "-o", "static/logs/" + host + ".dir", "-u", host]
+        gobuster_cmd = ["gobuster", "dir", "-w", "wordlists/raft-large-directories.txt", "-k", "-o", "static/logs/" + host + ".dir", "-u", host]
         subprocess.run(gobuster_cmd)
 
         #pull host and port number from url if formatted like so - google.com:5000 else default to port 80
@@ -239,7 +239,8 @@ def dir_scan(hosts):
 
             #if vhost exists, grab the id from host table, else query to see if the host is in the hosts table
             if row is not None:
-                row = sql_query_one("SELECT id FROM hosts JOIN nmap ON hosts.id=nmap.host_id JOIN nmap_ports ON nmap.id=nmap_id JOIN vhosts ON nmap_ports.id=nmap_ports_id WHERE vhost=? AND port_number=;", (host, port_number))
+                row = sql_query_one("SELECT hosts.id FROM hosts JOIN nmap ON hosts.id=nmap.host_id JOIN nmap_ports ON nmap.id=nmap_id JOIN vhosts \
+                                     ON nmap_ports.id=nmap_ports_id WHERE vhost=? AND port_number=?;", (host, port_number))
             else:
                 row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))
             
@@ -290,7 +291,7 @@ def dir_scan(hosts):
 
             #open results file from dir scan and create new entries in dir table if they don't exist
             for line in dirFile:
-                path = re.search("Found: (.*) \(Status: (.*)\).*", line)
+                path = re.search("(.*) \(Status: (.*)\).*", line)
 
                 row = sql_query_one("SELECT id FROM dir WHERE path=? AND vhost_id=?;", (path.group(1), vhost_id))
 
@@ -370,18 +371,19 @@ def hostlogs():
 def ports_log(host):
 
     scanenum = sql_query_all("SELECT timestamp, os_fingerprint FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
-                         WHERE host = ?", (host,))
+                              WHERE host = ?", (host,))
     
     hostscriptenum = sql_query_all("SELECT name, output FROM nmap_host_scripts JOIN hosts ON host_id=hosts.id WHERE host = ?;",(host,))
 
     portenum = sql_query_all("SELECT port_number, protocol, state, service, version, product, \
-                        extrainfo, has_script FROM hosts JOIN nmap ON hosts.id = nmap.host_id JOIN nmap_ports ON \
-                        nmap.id = nmap_ports.nmap_id WHERE host = ? ORDER BY port_number;", (host,))
+                              extrainfo, has_script FROM hosts JOIN nmap ON hosts.id = nmap.host_id JOIN nmap_ports ON \
+                              nmap.id = nmap_ports.nmap_id WHERE host = ? ORDER BY port_number;", (host,))
 
     scriptenum = sql_query_all("SELECT port_number, protocol, name, output FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
-                            JOIN nmap_ports ON nmap.id = nmap_ports.nmap_id JOIN nmap_scripts \
-                            ON nmap_ports.id = nmap_scripts.nmap_ports_id WHERE host = ?; \
-                            ", (host,))
+                                JOIN nmap_ports ON nmap.id = nmap_ports.nmap_id JOIN nmap_scripts \
+                                ON nmap_ports.id = nmap_scripts.nmap_ports_id WHERE host = ?;", (host,))
+
+    vhostscans = sql_query_all("SELECT port_number FROM vhosts JOIN nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id WHERE vhost=?;", (host,))
 
     timestamp = scanenum[0][0]
     os_fingerprints = scanenum[0][1]
@@ -394,7 +396,7 @@ def ports_log(host):
 
         for port in portenum:
             json_log.append({"Port" : port[0], "Protocol" : port[1], "State" : port[2], "Service" : port[3], "Version" : port[4], "Product" : port[5], \
-                            "Info" : port[6]})
+                             "Info" : port[6]})
             
             for script in scriptenum:
                 if script[0] == port[0] and script[1] == port[1]:
@@ -403,12 +405,22 @@ def ports_log(host):
         return jsonify(json_log)
     else:
         return render_template("log.html", host=host, lastscan=timestamp, \
-                                osmatches=os_fingerprints, ports=portenum, scripts=scriptenum, hostscripts=hostscriptenum)
+                                osmatches=os_fingerprints, ports=portenum, scripts=scriptenum, \
+                                hostscripts=hostscriptenum, vhostscans=vhostscans)
 
-@app.route("/log/<host>/vhost")
+@app.route("/log/<host>/vhosts")
 def vhost_log(host):
 
-    return "Not implemented"
+    if ":" in host:
+        host, port_number = host.split(":")
+    else:
+        port_number = "80"
+
+    vhostenum = sql_query_all("SELECT vhost, status FROM vhosts JOIN nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id \
+                               JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON hosts.id=nmap.host_id \
+                               WHERE port_number=? AND host=?;", (port_number, host))
+
+    return render_template("vhosts.html", vhosts=vhostenum)
 
 @app.route("/log/<host>/dir")
 def dir_log(host):
