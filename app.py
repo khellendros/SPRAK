@@ -43,13 +43,13 @@ def nmap_scan(hosts):
 
         os_fingerprints = []
 
-        #parse os match element and accuracy attribute
+        # parse os match element and accuracy attribute
         for osmatch in xmlroot.iter('osmatch'):          
             os_fingerprints.append("[ " + osmatch.attrib['name'] + " :: Accuracy: " + osmatch.attrib['accuracy'] + " ]")
 
         os_fingerprint = " & ".join(os_fingerprints)
 
-        #check for existing host in database
+        # check for existing host in database
         row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))
 
         # if host doesn't exist, insert into hosts table along with nmap scan and fingerprint
@@ -57,10 +57,10 @@ def nmap_scan(hosts):
             conn.execute("INSERT INTO hosts (host) VALUES (?);", (host,))
             conn.commit()
 
-            #grab new host primary key
+            # grab new host primary key
             host_id = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))[0]
 
-            #insert new scan into nmap table or else update existing nmap scan in nmap table
+            # insert new scan into nmap table or else update existing nmap scan in nmap table
             conn.execute("INSERT INTO nmap (host_id, os_fingerprint, timestamp) VALUES (?, ?, datetime('now'));", (host_id, os_fingerprint))
             conn.commit()
         else:
@@ -68,7 +68,7 @@ def nmap_scan(hosts):
             conn.execute("UPDATE nmap SET os_fingerprint = ?, timestamp = datetime('now') WHERE host_id=?;", (os_fingerprint, host_id))
             conn.commit()
 
-        #grab nmap table primary key to use on nmap_ports table
+        # grab nmap table primary key to use on nmap_ports table
         nmap_id = sql_query_one("SELECT id FROM nmap WHERE host_id=?;", (host_id,))[0]
 
         # iterate over all hostscript elements in nmap xml file and add to nmap_host_scripts table or update if entry exists
@@ -168,7 +168,7 @@ def vhost_scan(hosts):
                         + host + ":" + port_number + ".vhost", "-u", host]
         subprocess.run(gobuster_cmd)
 
-        with open("static/logs/" + host + ".vhost", "r") as vhostFile:
+        with open("static/logs/" + host + ":" + port_number + ".vhost", "r") as vhostFile:
 
             row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,))
             
@@ -199,23 +199,23 @@ def vhost_scan(hosts):
                 nmap_ports_id = sql_query_one("SELECT id FROM nmap_ports WHERE nmap_id=? AND protocol='tcp' AND nmap_id=?;", (nmap_id, nmap_id))[0]  
             else:
                 nmap_ports_id = row[0]
-
             
             row = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (host, nmap_ports_id))
 
             if row is None:
                 c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (host, "200", nmap_ports_id))
-
+                conn.commit()
+                
             for line in vhostFile:
-                vhost = re.search("Found: (.*) \(Status: (.*)\).*", line)
+                vhost = re.search("(.*): (.*) \(Status: (.*)\).*", line)
 
-                row = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (vhost.group(1), nmap_ports_id))
+                row = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (vhost.group(2), nmap_ports_id))
 
                 if row is None:
-                    c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (vhost.group(1), vhost.group(2), nmap_ports_id))
+                    c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (vhost.group(2), vhost.group(3), nmap_ports_id))
                 else:
-                    c = conn.execute("UPDATE vhosts SET status=? WHERE id=?;", (vhost.group(2), row[0]))
-                
+                    c = conn.execute("UPDATE vhosts SET status=? WHERE id=?;", (vhost.group(3), row[0]))
+                    
                 conn.commit()
 
     conn.close()
@@ -236,7 +236,7 @@ def dir_scan(hosts):
             gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-k", "-o", "static/logs/" + host + ":" + port_number + ".dir", "-u", host]
             subprocess.run(gobuster_cmd)
 
-            with open("static/logs/" + host + ".dir", "r") as dirFile:
+            with open("static/logs/" + host + ":" + port_number + ".dir", "r") as dirFile:
 
                 #query to check if this host is already a vhost so we don't create duplicates in both vhosts and hosts table
                 row = sql_query_one("SELECT id FROM vhosts WHERE vhost=?;", (host,))
@@ -374,10 +374,9 @@ def portscan(scantype, hostlist):
                 row = sql_query_all("SELECT vhost, port_number, status FROM vhosts JOIN nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id \
                                      JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON nmap.host_id=hosts.id \
                                      WHERE host=? ", (host,))
-            
-                if row is not None:
-                    if row[0][2] != "400" and row[0][2] != "404":
-                        vhosts.append(row[0][0] + ":" + row[0][1])
+                
+                if row[0][2] != "400" and row[0][2] != "404":
+                    vhosts.append(row[0][0] + ":" + row[0][1])
 
             if vhosts != []:
                 dir_scan(vhosts)
@@ -414,7 +413,7 @@ def ports_log(host):
     scriptenum = sql_query_all("SELECT port_number, protocol, name, output FROM hosts JOIN nmap ON hosts.id = nmap.host_id \
                                 JOIN nmap_ports ON nmap.id = nmap_ports.nmap_id JOIN nmap_scripts \
                                 ON nmap_ports.id = nmap_scripts.nmap_ports_id WHERE host = ?;", (host,))
-
+            
     vhostscans = sql_query_all("SELECT port_number FROM vhosts JOIN nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id WHERE vhost=?;", (host,))
 
     if scanenum == []:
