@@ -51,7 +51,7 @@
                         {% for row2 in vhostscans %}
                             {% for portnum in row2 %}
                                 {% if portnum == elem %}
-                                    <td><a href="/log/{{ host }}:{{ elem }}/vhosts"><button type="button" class="btn btn-warning btn-lg">{{ elem }}</button></a></td>
+                                    <td><a href="/log/{{ project }}/{{ host }}:{{ elem }}/vhosts"><button type="button" class="btn btn-warning btn-lg">{{ elem }}</button></a></td>
                                 {% else %}
                                     <td>{{ elem }}</td>
                                 {% endif %}
@@ -67,5 +67,5 @@
         </tr>
     {% endfor %}
 </table>
-<a href="/hostlogs">Back to Host Logs</a>&nbsp;|&nbsp;<a href="/static/logs/{{ ip_address }}.nmap">Original Nmap Log</a>
+<a href="/hostlogs/{{ project }}">Back to Host Logs</a>&nbsp;|&nbsp;<a href="/static/logs/{{ host }}.nmap">Original Nmap Log</a>
 {% endblock %}

@@ -5,7 +5,7 @@
         <tr><th>HOST LOGS</th></tr>
         {% for host in hostlist %}
             {% for elem in host %}
-                <tr><td><a href="log/{{ elem }}/ports">{{ elem }}</a></td></tr>
+                <tr><td><a href="/log/{{ project }}/{{ elem }}/ports">{{ elem }}</a></td></tr>
             {% endfor %}
         {% endfor %}
     </table>

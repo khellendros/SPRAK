@@ -11,7 +11,7 @@
         {% for elem in row %}
             <td>
                     {% if elem in direnum[1] %}
-                        <a href="/log/{{ elem }}:{{ port }}/dir">{{ elem }}</a>
+                        <a href="/log/{{ project }}/{{ elem }}:{{ port }}/dir">{{ elem }}</a>
                     {% else %}
                         {{ elem }}
                     {% endif %}
@@ -20,5 +20,5 @@
     </tr>
     {% endfor %}
 </table>
-<a href="/log/{{ host }}/ports">Back to port Logs</a>
+<a href="/log/{{ project }}/{{ host }}/ports">Back to port Logs</a>
 {% endblock %}

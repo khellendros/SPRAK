@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nmaprun>
 <?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
-<!-- Nmap 7.80 scan initiated Fri Sep 11 15:57:57 2020 as: nmap -sS -A -p 22,80 -oA static/logs/cache.htb cache.htb -->
-<nmaprun scanner="nmap" args="nmap -sS -A -p 22,80 -oA static/logs/cache.htb cache.htb" start="1599854277" startstr="Fri Sep 11 15:57:57 2020" version="7.80" xmloutputversion="1.04">
+<!-- Nmap 7.80 scan initiated Fri Sep 11 16:34:34 2020 as: nmap -sS -A -p 22,80 -oA static/logs/cache.htb cache.htb -->
+<nmaprun scanner="nmap" args="nmap -sS -A -p 22,80 -oA static/logs/cache.htb cache.htb" start="1599856474" startstr="Fri Sep 11 16:34:34 2020" version="7.80" xmloutputversion="1.04">
 <scaninfo type="syn" protocol="tcp" numservices="2" services="22,80"/>
 <verbose level="0"/>
 <debugging level="0"/>
-<host starttime="1599854277" endtime="1599854291"><status state="up" reason="reset" reason_ttl="63"/>
+<host starttime="1599856475" endtime="1599856489"><status state="up" reason="reset" reason_ttl="63"/>
 <address addr="10.10.10.188" addrtype="ipv4"/>
 <hostnames>
 <hostname name="cache.htb" type="user"/>
@@ -14,21 +14,21 @@
 </hostnames>
 <ports><port protocol="tcp" portid="22"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="ssh" product="OpenSSH" version="7.6p1 Ubuntu 4ubuntu0.3" extrainfo="Ubuntu Linux; protocol 2.0" ostype="Linux" method="probed" conf="10"><cpe>cpe:/a:openbsd:openssh:7.6p1</cpe><cpe>cpe:/o:linux:linux_kernel</cpe></service><script id="ssh-hostkey" output="&#xa;  2048 a9:2d:b2:a0:c4:57:e7:7c:35:2d:45:4d:db:80:8c:f1 (RSA)&#xa;  256 bc:e4:16:3d:2a:59:a1:3a:6a:09:28:dd:36:10:38:08 (ECDSA)&#xa;  256 57:d5:47:ee:07:ca:3a:c0:fd:9b:a8:7f:6b:4c:9d:7c (ED25519)"><table>
 <elem key="type">ssh-rsa</elem>
-<elem key="bits">2048</elem>
 <elem key="fingerprint">a92db2a0c457e77c352d454ddb808cf1</elem>
 <elem key="key">AAAAB3NzaC1yc2EAAAADAQABAAABAQCb3lyySrN6q6RWe0mdRQOvx8TgDiFAVhicR1h3UlBANr7ElILe7ex89jpzZSkhrYgCF7iArq7PFSX+VY52jRupsYJp7V2XLY9TZOq6F7u6eqsRA60UVeqkh+WnTE1D1GtQSDM2693/1AAFcEMhcwp/Z7nscp+PY1npxEEP6HoCHnf4h4p8RccQuk4AdUDWZo7WlT4fpW1oJCDbt+AOU5ylGUW56n4uSUG8YQVP5WqSspr6IY/GssEw3pGvRLnoJfHjARoT93Fr0u+eSs8zWhpHRWkTEWGhWIt9pPI/pAx2eAeeS0L5knZrHppoOjhR/Io+m0i1kF1MthV+qYjDjscf</elem>
+<elem key="bits">2048</elem>
 </table>
 <table>
 <elem key="type">ecdsa-sha2-nistp256</elem>
-<elem key="bits">256</elem>
 <elem key="fingerprint">bce4163d2a59a13a6a0928dd36103808</elem>
 <elem key="key">AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFAHWTqc7a2Az0RjFRBeGhfQkpQrBmEcMntikVFn2frnNPZklPdV7RCy2VW7Ae+LnyJU4Nq2LYqp2zfps+BZ3H4=</elem>
+<elem key="bits">256</elem>
 </table>
 <table>
 <elem key="type">ssh-ed25519</elem>
-<elem key="bits">256</elem>
 <elem key="fingerprint">57d547ee07ca3ac0fd9ba87f6b4c9d7c</elem>
 <elem key="key">AAAAC3NzaC1lZDI1NTE5AAAAIMnbsx7/pCTUKU7WwHrL/d0YS9c99tRraIPvg5zrRpiF</elem>
+<elem key="bits">256</elem>
 </table>
 </script></port>
 <port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="http" product="Apache httpd" version="2.4.29" extrainfo="(Ubuntu)" method="probed" conf="10"><cpe>cpe:/a:apache:http_server:2.4.29</cpe></service><script id="http-server-header" output="Apache/2.4.29 (Ubuntu)"><elem>Apache/2.4.29 (Ubuntu)</elem>
@@ -36,7 +36,7 @@
 </script></port>
 </ports>
 <os><portused state="open" proto="tcp" portid="22"/>
-<portused state="closed" proto="udp" portid="30876"/>
+<portused state="closed" proto="udp" portid="34364"/>
 <osmatch name="Linux 2.6.32" accuracy="95" line="55463">
 <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="95"><cpe>cpe:/o:linux:linux_kernel:2.6.32</cpe></osclass>
 </osmatch>
@@ -60,28 +60,29 @@
 <osmatch name="Adtran 424RG FTTH gateway" accuracy="92" line="1579">
 <osclass type="specialized" vendor="Adtran" osfamily="embedded" accuracy="92"><cpe>cpe:/h:adtran:424rg</cpe></osclass>
 </osmatch>
-<osmatch name="Linux 3.1 - 3.2" accuracy="92" line="62728">
+<osmatch name="Linux 2.6.39 - 3.2" accuracy="92" line="58074">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="92"><cpe>cpe:/o:linux:linux_kernel:2.6</cpe></osclass>
 <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="92"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
 </osmatch>
-<osmatch name="Linux 3.11" accuracy="92" line="63278">
-<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="92"><cpe>cpe:/o:linux:linux_kernel:3.11</cpe></osclass>
+<osmatch name="Linux 3.1 - 3.2" accuracy="92" line="62728">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="92"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
 </osmatch>
 <osmatch name="Linux 3.2 - 4.9" accuracy="92" line="65105">
 <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="3.X" accuracy="92"><cpe>cpe:/o:linux:linux_kernel:3</cpe></osclass>
 <osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="4.X" accuracy="92"><cpe>cpe:/o:linux:linux_kernel:4</cpe></osclass>
 </osmatch>
 </os>
-<uptime seconds="1280416" lastboot="Thu Aug 27 20:17:55 2020"/>
+<uptime seconds="1282614" lastboot="Thu Aug 27 20:17:55 2020"/>
 <distance value="2"/>
-<tcpsequence index="256" difficulty="Good luck!" values="E80245E,F3861081,CE4B7966,EC0E0F7E,98400DF3,E0616052"/>
+<tcpsequence index="261" difficulty="Good luck!" values="C19B3E33,9FC9515C,FDDCB28,4C0E5BCA,5AF80CA4,3B3922E0"/>
 <ipidsequence class="All zeros" values="0,0,0,0,0,0"/>
-<tcptssequence class="1000HZ" values="4C518821,4C518884,4C5188E8,4C51894C,4C5189B0,4C518A15"/>
-<trace port="443" proto="tcp">
-<hop ttl="1" ipaddr="10.10.14.1" rtt="99.39"/>
-<hop ttl="2" ipaddr="10.10.10.188" rtt="99.50" host="cache.htb"/>
+<tcptssequence class="1000HZ" values="4C73114F,4C7311B1,4C731216,4C73127A,4C7312DE,4C731342"/>
+<trace port="80" proto="tcp">
+<hop ttl="1" ipaddr="10.10.14.1" rtt="98.48"/>
+<hop ttl="2" ipaddr="10.10.10.188" rtt="98.58" host="cache.htb"/>
 </trace>
-<times srtt="97777" rttvar="1354" to="103193"/>
+<times srtt="97205" rttvar="599" to="100000"/>
 </host>
-<runstats><finished time="1599854291" timestr="Fri Sep 11 15:58:11 2020" elapsed="14.49" summary="Nmap done at Fri Sep 11 15:58:11 2020; 1 IP address (1 host up) scanned in 14.49 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+<runstats><finished time="1599856489" timestr="Fri Sep 11 16:34:49 2020" elapsed="14.49" summary="Nmap done at Fri Sep 11 16:34:49 2020; 1 IP address (1 host up) scanned in 14.49 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
 </runstats>
 </nmaprun>

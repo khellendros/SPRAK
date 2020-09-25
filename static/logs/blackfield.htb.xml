@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.80 scan initiated Fri Sep 25 10:25:14 2020 as: nmap -sS -A -p 53,88,135,389,445,593,3268,5985 -oA static/logs/blackfield.htb blackfield.htb -->
+<nmaprun scanner="nmap" args="nmap -sS -A -p 53,88,135,389,445,593,3268,5985 -oA static/logs/blackfield.htb blackfield.htb" start="1601043914" startstr="Fri Sep 25 10:25:14 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="8" services="53,88,135,389,445,593,3268,5985"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1601043915" endtime="1601044105"><status state="up" reason="echo-reply" reason_ttl="127"/>
+<address addr="10.10.10.192" addrtype="ipv4"/>
+<hostnames>
+<hostname name="blackfield.htb" type="user"/>
+<hostname name="blackfield.htb" type="PTR"/>
+</hostnames>
+<ports><port protocol="tcp" portid="53"><state state="open" reason="syn-ack" reason_ttl="127"/><service name="domain" servicefp="SF-Port53-TCP:V=7.80%I=7%D=9/25%Time=5F6DFDD6%P=x86_64-pc-linux-gnu%r(DNSVersionBindReqTCP,20,&quot;\0\x1e\0\x06\x81\x04\0\x01\0\0\0\0\0\0\x07version\x04bind\0\0\x10\0\x03&quot;);" method="table" conf="3"/><script id="fingerprint-strings" output="&#xa;  DNSVersionBindReqTCP: &#xa;    version&#xa;    bind"><elem key="DNSVersionBindReqTCP">&#xa;    version&#xa;    bind</elem>
+</script></port>
+<port protocol="tcp" portid="88"><state state="open" reason="syn-ack" reason_ttl="127"/><service name="kerberos-sec" product="Microsoft Windows Kerberos" extrainfo="server time: 2020-09-25 21:31:23Z" ostype="Windows" method="probed" conf="10"><cpe>cpe:/a:microsoft:kerberos</cpe><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="tcp" portid="135"><state state="open" reason="syn-ack" reason_ttl="127"/><service name="msrpc" product="Microsoft Windows RPC" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="tcp" portid="389"><state state="open" reason="syn-ack" reason_ttl="127"/><service name="ldap" product="Microsoft Windows Active Directory LDAP" extrainfo="Domain: BLACKFIELD.local0., Site: Default-First-Site-Name" hostname="DC01" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="tcp" portid="445"><state state="open" reason="syn-ack" reason_ttl="127"/><service name="microsoft-ds" method="table" conf="3"/></port>
+<port protocol="tcp" portid="593"><state state="open" reason="syn-ack" reason_ttl="127"/><service name="ncacn_http" product="Microsoft Windows RPC over HTTP" version="1.0" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="tcp" portid="3268"><state state="open" reason="syn-ack" reason_ttl="127"/><service name="ldap" product="Microsoft Windows Active Directory LDAP" extrainfo="Domain: BLACKFIELD.local0., Site: Default-First-Site-Name" hostname="DC01" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="tcp" portid="5985"><state state="open" reason="syn-ack" reason_ttl="127"/><service name="http" product="Microsoft HTTPAPI httpd" version="2.0" extrainfo="SSDP/UPnP" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service><script id="http-server-header" output="Microsoft-HTTPAPI/2.0"><elem>Microsoft-HTTPAPI/2.0</elem>
+</script><script id="http-title" output="Not Found"><elem key="title">Not Found</elem>
+</script></port>
+</ports>
+<os><portused state="open" proto="tcp" portid="53"/>
+</os>
+<distance value="2"/>
+<tcpsequence index="264" difficulty="Good luck!" values="8F9F994E,12FC5BD2,ABA35B4D,A220FDC6,8FC47DA6,E123EEEE"/>
+<ipidsequence class="Incremental" values="B287,B288,B289,B28A,B28B,B28C"/>
+<tcptssequence class="none returned (unsupported)"/>
+<hostscript><script id="clock-skew" output="7h06m01s"><elem key="median">25561</elem>
+<elem key="mean">25561</elem>
+<elem key="count">1</elem>
+<elem key="stddev">0</elem>
+</script><script id="smb2-security-mode" output="&#xa;  2.02: &#xa;    Message signing enabled and required"><table key="2.02">
+<elem>Message signing enabled and required</elem>
+</table>
+</script><script id="smb2-time" output="&#xa;  date: 2020-09-25T21:33:50&#xa;  start_date: N/A"><elem key="date">2020-09-25T21:33:50</elem>
+<elem key="start_date">N/A</elem>
+</script></hostscript><trace port="445" proto="tcp">
+<hop ttl="1" ipaddr="10.10.14.1" rtt="97.08"/>
+<hop ttl="2" ipaddr="10.10.10.192" rtt="97.54" host="blackfield.htb"/>
+</trace>
+<times srtt="96681" rttvar="936" to="100425"/>
+</host>
+<runstats><finished time="1601044105" timestr="Fri Sep 25 10:28:25 2020" elapsed="190.60" summary="Nmap done at Fri Sep 25 10:28:25 2020; 1 IP address (1 host up) scanned in 190.60 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>
