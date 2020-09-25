@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 
 {% block body %}
+<a href="/log/{{ project }}/{{ host }}/ports">Back to port Logs</a>
 <table class="table table-dark">
+    <tr>
+        <th colspan="7">PROJECT: <span style="color: white;">{{ project }}</span></th>
+    </tr>
     <tr>
         <th>VHOST</th>
         <th>STATUS</th>

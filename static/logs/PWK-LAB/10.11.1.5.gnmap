@@ -1,0 +1,4 @@
+# Nmap 7.80 scan initiated Fri Sep 25 12:56:21 2020 as: nmap -sS -A -p 135,139,445,1025 -oA static/logs/PWK-LAB/10.11.1.5 10.11.1.5
+Host: 10.11.1.5 ()	Status: Up
+Host: 10.11.1.5 ()	Ports: 135/open/tcp//msrpc//Microsoft Windows RPC/, 139/open/tcp//netbios-ssn//Microsoft Windows netbios-ssn/, 445/open/tcp//microsoft-ds//Microsoft Windows XP microsoft-ds/, 1025/open/tcp//msrpc//Microsoft Windows RPC/	Seq Index: 131	IP ID Seq: Incremental
+# Nmap done at Fri Sep 25 12:56:47 2020 -- 1 IP address (1 host up) scanned in 26.27 seconds

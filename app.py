@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import sqlite3, subprocess, re
 import xml.etree.ElementTree as ET
-import glob
+import glob, os
 
 DBPATH = "projects/"
 DIR_WORDLISTS = ["wordlists/raft-large-directories.txt", "wordlists/raft-large-files.txt", "wordlists/raft-large-words.txt"]
@@ -11,18 +11,29 @@ DIR_WORDLISTS = ["wordlists/raft-large-directories.txt", "wordlists/raft-large-f
 #       database datetime() wrong
 #       Implement secure coding practices.  Do we deploy this inside a container?  Nmap has to run as root for -sS
 
+def log_dir(dbfile):
+
+    projectname = re.search("(.*).db", dbfile)
+
+    try:  
+        os.mkdir("static/logs/" + projectname.group(1))  
+    except OSError as error:  
+        print(error)
+
+    return projectname.group(1) + "/"
+
 def nmap_scan(hosts, dbfile):
 
     conn = sqlite3.connect(DBPATH + dbfile)
-
+    
     #fast UDP and TCP scan for open ports
     for host in hosts:
         
-        nmap_cmd = ["nmap", "-sS", "-T4", "-p", "-", "-oA", "static/logs/" + host, host]
+        nmap_cmd = ["nmap", "-sS", "-T4", "-p", "-", "-oA", "static/logs/" + log_dir(dbfile) + host, host]
         print("Nmap Scan Phase 1: ", nmap_cmd)
         subprocess.run(nmap_cmd)
 
-        xmltree = ET.parse("static/logs/" + host + ".xml")
+        xmltree = ET.parse("static/logs/" + log_dir(dbfile) + host + ".xml")
         xmlroot = xmltree.getroot()
 
         openports = []
@@ -34,12 +45,12 @@ def nmap_scan(hosts, dbfile):
         portarg = ",".join(openports)
         
         if len(openports) > 0:
-            nmap_cmd = ["nmap", "-sS", "-A", "-p", portarg, "-oA", "static/logs/" + host, host]
+            nmap_cmd = ["nmap", "-sS", "-A", "-p", portarg, "-oA", "static/logs/" + log_dir(dbfile) + host, host]
             print("Nmap Scan Phase 2: ", nmap_cmd)
             subprocess.run(nmap_cmd)
 
         ### parse xml and insert into database ###
-        xmltree = ET.parse("static/logs/" + host + ".xml")
+        xmltree = ET.parse("static/logs/" + log_dir(dbfile) + host + ".xml")
         xmlroot = xmltree.getroot()
 
         os_fingerprints = []
@@ -166,10 +177,10 @@ def vhost_scan(hosts, dbfile):
             port_number = "80"
 
         gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" \
-                        + host + ":" + port_number + ".vhost", "-u", host]
+                        + log_dir(dbfile) + host + ":" + port_number + ".vhost", "-u", host]
         subprocess.run(gobuster_cmd)
 
-        with open("static/logs/" + host + ":" + port_number + ".vhost", "r") as vhostFile:
+        with open("static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".vhost", "r") as vhostFile:
 
             row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,), dbfile)
             
@@ -234,10 +245,10 @@ def dir_scan(hosts, dbfile):
             port_number = "80"
 
         for wordlist in DIR_WORDLISTS:
-            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-k", "-o", "static/logs/" + host + ":" + port_number + ".dir", "-u", host]
+            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-k", "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir", "-u", host]
             subprocess.run(gobuster_cmd)
 
-            with open("static/logs/" + host + ":" + port_number + ".dir", "r") as dirFile:
+            with open("static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir", "r") as dirFile:
 
                 #query to check if this host is already a vhost so we don't create duplicates in both vhosts and hosts table
                 row = sql_query_one("SELECT id FROM vhosts WHERE vhost=?;", (host,), dbfile)
@@ -290,7 +301,7 @@ def dir_scan(hosts, dbfile):
                     c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (host, "200", nmap_ports_id))
                     conn.commit()
 
-                    vhost_id = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (host, nmap_ports_id, dbfile))[0]
+                    vhost_id = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (host, nmap_ports_id), dbfile)[0]
                 else:
                     vhost_id = row[0]
 
@@ -387,11 +398,12 @@ def portscan(scantype, project, hostlist):
         vhosts = []
 
         for host in hosts:
-            row = sql_query_all("SELECT nmap_ports.id, port_number, nmap_id FROM nmap_ports \
+            rows = sql_query_all("SELECT nmap_ports.id, port_number, nmap_id FROM nmap_ports \
                                              JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON nmap.host_id=hosts.id \
-                                             WHERE service='http' AND host=?;",(host,), dbfile)
-            if row is not None:
-                http_hosts.append(host + ":" + row[0][1])
+                                             WHERE service='http' OR service='https' AND host=?;",(host,), dbfile)
+            
+            for row in rows:
+                http_hosts.append(host + ":" + row[1])
 
         if http_hosts != []:
             vhost_scan(http_hosts, dbfile)
@@ -455,7 +467,6 @@ def ports_log(project, host):
     timestamp = scanenum[0][0]
     os_fingerprints = scanenum[0][1]
 
-    
     if request.content_type == "application/json" and request.accept_mimetypes.accept_json:
         json_log = [{ "Host": host, "Last Scan": timestamp, "OS Fingerprints": os_fingerprints}]
 
@@ -474,7 +485,7 @@ def ports_log(project, host):
     else:
         return render_template("log.html", host=host, lastscan=timestamp, \
                                 osmatches=os_fingerprints, ports=portenum, scripts=scriptenum, \
-                                hostscripts=hostscriptenum, vhostscans=vhostscans, project=project)
+                                hostscripts=hostscriptenum, vhostscans=vhostscans, project=project, portfound="0")
 
 @app.route("/log/<project>/<host>/vhosts")
 def vhost_log(project, host):

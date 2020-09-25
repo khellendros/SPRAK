@@ -2,7 +2,7 @@
 
 {% block body %}
     <table class="table table-dark">
-        <tr><th>HOST LOGS</th></tr>
+        <tr><th>{{ project }} HOST LOGS</th></tr>
         {% for host in hostlist %}
             {% for elem in host %}
                 <tr><td><a href="/log/{{ project }}/{{ elem }}/ports">{{ elem }}</a></td></tr>

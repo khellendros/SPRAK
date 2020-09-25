@@ -1,7 +1,12 @@
 {% extends "layout.html" %}
 
 {% block body %}
+{% set glob={} %}
+<a href="/hostlogs/{{ project }}">Back to Host Logs</a>
 <table class="table table-dark">
+    <tr>
+        <th colspan="7">PROJECT: <span style="color: white;">{{ project }}</span></th>
+    </tr>
     <tr>
         <th colspan="3">HOST</th>
         <th colspan="4">LAST SCAN</th>
@@ -37,35 +42,46 @@
                     <tr style="border-top: none;">
                         <th style="border-top: none;" colspan="7">[SCRIPTS]</th>
                     </tr>
-                    {% for scriptrow in scripts %}
-                        {% if scriptrow[0] in row and scriptrow[1] in row %}
+                {% for scriptrow in scripts %}
+                    {% if scriptrow[0] in row and scriptrow[1] in row %}
                         <tr style="border-top: none;">
                             <td style="border-top: none;" class="scripts" colspan="7"><span class="scriptname">{{ scriptrow[2] }}</span><br />{{ scriptrow[3] }}</td>
                         </tr>
-                        {% endif %}
-                    {% endfor %}
-                {% elif elem == "no script" %}
+                    {% endif %}
+                {% endfor %}
+            {% elif elem == "no script" %}
                     </tr>
-                {% elif elem != "NULL" %}
-                    {% if vhostscans != "NULL" %}
-                        {% for row2 in vhostscans %}
-                            {% for portnum in row2 %}
-                                {% if portnum == elem %}
-                                    <td><a href="/log/{{ project }}/{{ host }}:{{ elem }}/vhosts"><button type="button" class="btn btn-warning btn-lg">{{ elem }}</button></a></td>
-                                {% else %}
-                                    <td>{{ elem }}</td>
-                                {% endif %}
-                            {% endfor %}
+            {% elif elem != "NULL" %}
+                {% if vhostscans != "NULL" and (row[3] == "http" or row[3] == "https") %}
+
+                    {% set _ = glob.update({'portfound':False}) %}
+
+                    {% for row2 in vhostscans %}
+
+                        {% for portnum in row2 %}
+
+                            {% if portnum == elem %}
+                                {% set _ = glob.update({'portfound':portnum}) %}
+                            {% endif %}
+
                         {% endfor %}
+
+                    {% endfor %}
+                    
+                    {% if elem == glob['portfound'] %}
+                        <td><a href="/log/{{ project }}/{{ host }}:{{ elem }}/vhosts"><button type="button" class="btn btn-warning btn-lg">{{ elem }}</button></a></td>
                     {% else %}
                         <td>{{ elem }}</td>
                     {% endif %}
                 {% else %}
+                        <td>{{ elem }}</td>
+                {% endif %}
+            {% else %}
                     <td>&nbsp;-&nbsp;</td>
             {% endif %}
         {% endfor %}
         </tr>
     {% endfor %}
 </table>
-<a href="/hostlogs/{{ project }}">Back to Host Logs</a>&nbsp;|&nbsp;<a href="/static/logs/{{ host }}.nmap">Original Nmap Log</a>
+<a href="/hostlogs/{{ project }}">Back to Host Logs</a>&nbsp;|&nbsp;<a href="/static/logs/{{ project }}/{{ host }}.nmap">Original Nmap Log</a>
 {% endblock %}

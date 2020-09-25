@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 
 {% block body %}
+<a href="/log/{{ project }}/{{ direnum[0][2] }}/vhosts">Back to vhost Logs</a>
 <table class="table table-dark">
+    <tr>
+        <th colspan="7">PROJECT: <span style="color: white;">{{ project }}</span></th>
+    </tr>
     <tr>
         <th>PATH</th>
         <th>STATUS</th>

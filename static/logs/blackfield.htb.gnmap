@@ -1,4 +1,0 @@
-# Nmap 7.80 scan initiated Fri Sep 25 10:25:14 2020 as: nmap -sS -A -p 53,88,135,389,445,593,3268,5985 -oA static/logs/blackfield.htb blackfield.htb
-Host: 10.10.10.192 (blackfield.htb)	Status: Up
-Host: 10.10.10.192 (blackfield.htb)	Ports: 53/open/tcp//domain?///, 88/open/tcp//kerberos-sec//Microsoft Windows Kerberos (server time: 2020-09-25 21:31:23Z)/, 135/open/tcp//msrpc//Microsoft Windows RPC/, 389/open/tcp//ldap//Microsoft Windows Active Directory LDAP (Domain: BLACKFIELD.local0., Site: Default-First-Site-Name)/, 445/open/tcp//microsoft-ds?///, 593/open/tcp//ncacn_http//Microsoft Windows RPC over HTTP 1.0/, 3268/open/tcp//ldap//Microsoft Windows Active Directory LDAP (Domain: BLACKFIELD.local0., Site: Default-First-Site-Name)/, 5985/open/tcp//http//Microsoft HTTPAPI httpd 2.0 (SSDP|UPnP)/	Seq Index: 264	IP ID Seq: Incremental
-# Nmap done at Fri Sep 25 10:28:25 2020 -- 1 IP address (1 host up) scanned in 190.60 seconds
