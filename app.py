@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import sqlite3, subprocess, re
 import xml.etree.ElementTree as ET
-import glob, os
+import glob, os, socket
 
 DBPATH = "projects/"
 DIR_WORDLISTS = ["wordlists/raft-large-directories.txt", "wordlists/raft-large-files.txt", "wordlists/raft-large-words.txt"]
@@ -21,6 +21,13 @@ def log_dir(dbfile):
         print(error)
 
     return projectname.group(1) + "/"
+
+def valid_ip(address):
+    try: 
+        socket.inet_aton(address)
+        return True
+    except:
+        return False
 
 def nmap_scan(hosts, dbfile):
 
@@ -169,6 +176,8 @@ def vhost_scan(hosts, dbfile):
 
     conn = sqlite3.connect(DBPATH + dbfile)
 
+    print(hosts)
+
     for host in hosts:
 
         if ":" in host:
@@ -176,8 +185,14 @@ def vhost_scan(hosts, dbfile):
         else:
             port_number = "80"
 
-        gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" \
-                        + log_dir(dbfile) + host + ":" + port_number + ".vhost", "-u", host]
+
+        if valid_ip(host) == False:
+            gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" \
+                            + log_dir(dbfile) + host + ":" + port_number + ".vhost", "-u", host]
+        else:
+            gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/dummylist.txt", "-k", "-o", "static/logs/" \
+                            + log_dir(dbfile) + host + ":" + port_number + ".vhost", "-u", host]
+
         subprocess.run(gobuster_cmd)
 
         with open("static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".vhost", "r") as vhostFile:
@@ -245,8 +260,8 @@ def dir_scan(hosts, dbfile):
             port_number = "80"
 
         for wordlist in DIR_WORDLISTS:
-            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-k", "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir", "-u", host]
-            subprocess.run(gobuster_cmd)
+            dirb_cmd = ["dirb", "http://" + host + ":" + port_number, wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir"]
+            subprocess.run(dirb_cmd)
 
             with open("static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir", "r") as dirFile:
 
@@ -307,16 +322,17 @@ def dir_scan(hosts, dbfile):
 
                 #open results file from dir scan and create new entries in dir table if they don't exist
                 for line in dirFile:
-                    path = re.search("(.*) \(Status: (.*)\).*", line)
+                    path = re.search("==> DIRECTORY: (.*)", line)
 
-                    row = sql_query_one("SELECT id FROM dir WHERE path=? AND vhost_id=?;", (path.group(1), vhost_id), dbfile)
+                    if path is not None:
+                        row = sql_query_one("SELECT id FROM dir WHERE path=? AND vhost_id=?;", (path.group(1), vhost_id), dbfile)
 
-                    if row is None:
-                        c = conn.execute("INSERT INTO dir (path, status, vhost_id) VALUES (?, ?, ?);", (path.group(1), path.group(2), vhost_id))
-                    else:
-                        c = conn.execute("UPDATE dir SET status=? WHERE id=?;", (path.group(2), row[0]))
+                        if row is None:
+                            c = conn.execute("INSERT INTO dir (path, status, vhost_id) VALUES (?, ?, ?);", (path.group(1), "200", vhost_id))
+                        else:
+                            c = conn.execute("UPDATE dir SET status=? WHERE id=?;", ("200", row[0]))
                     
-                    conn.commit()
+                        conn.commit()
 
     conn.close()
 
@@ -400,7 +416,7 @@ def portscan(scantype, project, hostlist):
         for host in hosts:
             rows = sql_query_all("SELECT nmap_ports.id, port_number, nmap_id FROM nmap_ports \
                                              JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON nmap.host_id=hosts.id \
-                                             WHERE service='http' OR service='https' AND host=?;",(host,), dbfile)
+                                             WHERE (service='http' OR service='https') AND host=?;",(host,), dbfile)
             
             for row in rows:
                 http_hosts.append(host + ":" + row[1])
@@ -409,12 +425,13 @@ def portscan(scantype, project, hostlist):
             vhost_scan(http_hosts, dbfile)
 
             for host in hosts:
-                row = sql_query_all("SELECT vhost, port_number, status FROM vhosts JOIN nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id \
+                rows = sql_query_all("SELECT vhost, port_number, status FROM vhosts JOIN nmap_ports ON vhosts.nmap_ports_id=nmap_ports.id \
                                      JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts ON nmap.host_id=hosts.id \
                                      WHERE host=? ", (host,), dbfile)
                 
-                if row[0][2] != "400" and row[0][2] != "404":
-                    vhosts.append(row[0][0] + ":" + row[0][1])
+                for row in rows:
+                    if row[2] != "400" and row[2] != "404":
+                        vhosts.append(row[0] + ":" + row[1])
 
             if vhosts != []:
                 dir_scan(vhosts, dbfile)
@@ -485,7 +502,7 @@ def ports_log(project, host):
     else:
         return render_template("log.html", host=host, lastscan=timestamp, \
                                 osmatches=os_fingerprints, ports=portenum, scripts=scriptenum, \
-                                hostscripts=hostscriptenum, vhostscans=vhostscans, project=project, portfound="0")
+                                hostscripts=hostscriptenum, vhostscans=vhostscans, project=project)
 
 @app.route("/log/<project>/<host>/vhosts")
 def vhost_log(project, host):
