@@ -29,6 +29,17 @@ def valid_ip(address):
     except:
         return False
 
+def query_service_type(host, port_number, dbfile):
+
+    row = sql_query_one("SELECT service FROM nmap_ports JOIN nmap ON nmap_ports.nmap_id=nmap.id JOIN hosts \
+                         ON nmap.host_id=hosts.id WHERE (service='http' OR service='https') \
+                         AND port_number=? AND host=?;",(port_number, host), dbfile)
+    
+    if row is None:
+        return "NULL"
+    else:
+        return row[0]
+
 def nmap_scan(hosts, dbfile):
 
     conn = sqlite3.connect(DBPATH + dbfile)
@@ -176,8 +187,6 @@ def vhost_scan(hosts, dbfile):
 
     conn = sqlite3.connect(DBPATH + dbfile)
 
-    print(hosts)
-
     for host in hosts:
 
         if ":" in host:
@@ -185,13 +194,14 @@ def vhost_scan(hosts, dbfile):
         else:
             port_number = "80"
 
+        service = query_service_type(host, port_number, dbfile)
 
         if valid_ip(host) == False:
             gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" \
-                            + log_dir(dbfile) + host + ":" + port_number + ".vhost", "-u", host]
+                            + log_dir(dbfile) + host + ":" + port_number + ".vhost", "-u", service + "://" + host]
         else:
             gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/dummylist.txt", "-k", "-o", "static/logs/" \
-                            + log_dir(dbfile) + host + ":" + port_number + ".vhost", "-u", host]
+                            + log_dir(dbfile) + host + ":" + port_number + ".vhost", "-u", service + "://" + host]
 
         subprocess.run(gobuster_cmd)
 
@@ -259,9 +269,24 @@ def dir_scan(hosts, dbfile):
         else:
             port_number = "80"
 
+        service = query_service_type(host, port_number, dbfile)
+
+        # temp fix: if host wasn't scanned no port entry will exist so we are scanning if service returns NULL
+        if service == "NULL":
+            nmap_scan(host, dbfile)
+            service = query_service_type(host, port_number, dbfile)
+
+            #if service still returns null, return
+            if service == "NULL":
+                print("Invalid protocol for dir scan.  Must be http/https.")
+                return
+
         for wordlist in DIR_WORDLISTS:
-            dirb_cmd = ["dirb", "http://" + host + ":" + port_number, wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir"]
-            subprocess.run(dirb_cmd)
+            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir", "-k",  "-u", service + "://" + host + ":" + port_number]
+            #dirb_cmd = ["dirb", service + "://" + host + ":" + port_number, wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir"]
+            #dirb_cmd = ["dirb", service + "://" + host + ":" + port_number, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir"]
+
+            subprocess.run(gobuster_cmd)
 
             with open("static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir", "r") as dirFile:
 
@@ -322,17 +347,38 @@ def dir_scan(hosts, dbfile):
 
                 #open results file from dir scan and create new entries in dir table if they don't exist
                 for line in dirFile:
-                    path = re.search("==> DIRECTORY: (.*)", line)
+
+                    # regex for gobuster
+                    path = re.search("(.*) \(Status: (.*)\)", line)
+                    
+                    # regex for dirb
+                    #path = re.search("==> DIRECTORY: (.*)", line)
+                    #filematch = re.search("\+ (.*) \(CODE:(.*)\|SIZE:(.*)\)", line)
 
                     if path is not None:
-                        row = sql_query_one("SELECT id FROM dir WHERE path=? AND vhost_id=?;", (path.group(1), vhost_id), dbfile)
+
+                        fullpath = service + "://" + host + path.group(1)
+
+                        row = sql_query_one("SELECT id FROM dir WHERE path=? AND vhost_id=?;", (fullpath, vhost_id), dbfile)
 
                         if row is None:
-                            c = conn.execute("INSERT INTO dir (path, status, vhost_id) VALUES (?, ?, ?);", (path.group(1), "200", vhost_id))
+                            c = conn.execute("INSERT INTO dir (path, status, vhost_id) VALUES (?, ?, ?);", (fullpath, path.group(2), vhost_id))
                         else:
-                            c = conn.execute("UPDATE dir SET status=? WHERE id=?;", ("200", row[0]))
+                            c = conn.execute("UPDATE dir SET status=? WHERE id=?;", (path.group(2), row[0]))
                     
                         conn.commit()
+                    
+                    # alternate match for dirb
+                    #if filematch is not None:
+
+                    #    row = sql_query_one("SELECT id FROM dir WHERE path=? AND vhost_id=?;", (filematch.group(1), vhost_id), dbfile)
+
+                    #    if row is None:
+                    #        c = conn.execute("INSERT INTO dir (path, status, vhost_id) VALUES (?, ?, ?);", (filematch.group(1), filematch.group(2), vhost_id))
+                    #    else:
+                    #        c = conn.execute("UPDATE dir SET status=? WHERE id=?;", (filematch.group(2), row[0]))
+                    
+                    #    conn.commit()
 
     conn.close()
 
@@ -554,7 +600,7 @@ def dir_log(project, host):
         json_log = []
 
         for path in direnum:
-            json_log.append({path[1] : path[2]})
+            json_log.append({path[0] : path[1]})
             
         return jsonify(json_log)
     else:
