@@ -48,6 +48,31 @@ th
     background-color: #3d3d3d;
     
 }
+
+.nav
+{
+    color: white;
+    text-align: center;
+    padding: 10px;
+    text-decoration: none;
+    
+}
+
+a.nav:link
+{
+    text-decoration: none;
+}
+
+a.nav:visited
+{
+    text-decoration: none;
+}
+
+a.nav:hover
+{
+    text-decoration: none;
+}
+
 body
 {
 
