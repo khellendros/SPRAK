@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<a href="/log/{{ project }}/{{ direnum[0][2] }}/vhosts">Back to vhost Logs</a>
+<a href="/log/{{ project }}/{{ direnum[0][2] }}:{{ port }}/vhosts"><button type="button" class="btn btn-danger btn-sm">Back to vhost Logs</button></a>
 <table class="table table-dark">
     <tr>
         <th colspan="7">PROJECT: <span style="color: white;">{{ project }}</span></th>
@@ -12,9 +12,9 @@
     </tr>
     {% for row in direnum %}
         <tr>
-            <td><a href="http://{{ vhost }}:{{ port }}{{ row[0] }}">http://{{ vhost }}:{{ port }}{{ row[0] }}</a></td>
+            <td><a href="{{ row[0] }}">{{ row[0] }}</a></td>
             <td>{{ row[1] }}</td></tr>
     {% endfor %}
 </table>
-<a href="/log/{{ project }}/{{ direnum[0][2] }}/vhosts">Back to vhost Logs</a>
+<a href="/log/{{ project }}/{{ direnum[0][2] }}:{{ port }}/vhosts"><button type="button" class="btn btn-danger btn-sm">Back to vhost Logs</button></a>
 {% endblock %}

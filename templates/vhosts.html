@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<a href="/log/{{ project }}/{{ host }}/ports">Back to port Logs</a>
+<a href="/log/{{ project }}/{{ host }}/ports"><button type="button" class="btn btn-danger btn-sm">Back to Port Logs</button></a>
 <table class="table table-dark">
     <tr>
         <th colspan="7">PROJECT: <span style="color: white;">{{ project }}</span></th>
@@ -24,5 +24,5 @@
     </tr>
     {% endfor %}
 </table>
-<a href="/log/{{ project }}/{{ host }}/ports">Back to port Logs</a>
+<a href="/log/{{ project }}/{{ host }}/ports"><button type="button" class="btn btn-danger btn-sm">Back to Port Logs</button></a>
 {% endblock %}

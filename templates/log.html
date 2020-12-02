@@ -2,7 +2,7 @@
 
 {% block body %}
 {% set glob={} %}
-<a href="/hostlogs/{{ project }}">Back to Host Logs</a>
+<a href="/hostlogs/{{ project }}"><button type="button" class="btn btn-danger btn-sm">Back to Host Logs</button></a>
 <table class="table table-dark">
     <tr>
         <th colspan="7">PROJECT: <span style="color: white;">{{ project }}</span></th>
@@ -83,5 +83,5 @@
         </tr>
     {% endfor %}
 </table>
-<a href="/hostlogs/{{ project }}">Back to Host Logs</a>&nbsp;|&nbsp;<a href="/static/logs/{{ project }}/{{ host }}.nmap">Original Nmap Log</a>
+<a href="/hostlogs/{{ project }}"><button type="button" class="btn btn-danger btn-sm">Back to Host Logs</button></a>&nbsp;|&nbsp;<a href="/static/logs/{{ project }}/{{ host }}.nmap">Original Nmap Log</a>
 {% endblock %}

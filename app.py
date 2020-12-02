@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import sqlite3, subprocess, re
 import xml.etree.ElementTree as ET
 import glob, os, socket
+import requests
 
 DBPATH = "projects/"
 DIR_WORDLISTS = ["wordlists/raft-large-directories.txt", "wordlists/raft-large-files.txt", "wordlists/raft-large-words.txt"]
@@ -357,7 +358,7 @@ def dir_scan(hosts, dbfile):
 
                     if path is not None:
 
-                        fullpath = service + "://" + host + path.group(1)
+                        fullpath = service + "://" + host + ":" + port_number + path.group(1)
 
                         row = sql_query_one("SELECT id FROM dir WHERE path=? AND vhost_id=?;", (fullpath, vhost_id), dbfile)
 
@@ -419,6 +420,20 @@ def index():
         projects.append(projectname.group(1))
 
     return render_template("index.html", projects=projects)
+
+@app.route("/webscan", methods=["GET", "POST"])
+def webscan():
+    if request.method == "POST":
+        project = request.form.get("project")
+        hosts = request.form.get("hosts")
+        scantype = request.form.get("scantype")
+
+        curl_cmd = "curl http://127.0.0.1:5000/" + scantype + "/" + project + "/" + hosts
+        p = subprocess.Popen(curl_cmd, shell=True, stdout=subprocess.PIPE)
+
+        return render_template("index.html")
+    else:
+        return render_template("webscan.html")
 
 @app.route("/<scantype>/<project>/<hostlist>")
 def portscan(scantype, project, hostlist):
