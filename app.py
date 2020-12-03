@@ -249,10 +249,11 @@ def vhost_scan(hosts, dbfile):
 
                 row = sql_query_one("SELECT id FROM vhosts WHERE vhost=? AND nmap_ports_id=?;", (vhost.group(2), nmap_ports_id), dbfile)
 
-                if row is None:
-                    c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (vhost.group(2), vhost.group(3), nmap_ports_id))
-                else:
-                    c = conn.execute("UPDATE vhosts SET status=? WHERE id=?;", (vhost.group(3), row[0]))
+                if vhost.group(3) != "400":
+                    if row is None:
+                        c = conn.execute("INSERT INTO vhosts (vhost, status, nmap_ports_id) VALUES (?, ?, ?);", (vhost.group(2), vhost.group(3), nmap_ports_id))
+                    else:
+                        c = conn.execute("UPDATE vhosts SET status=? WHERE id=?;", (vhost.group(3), row[0]))
                     
                 conn.commit()
 
@@ -271,16 +272,20 @@ def dir_scan(hosts, dbfile):
             port_number = "80"
 
         service = query_service_type(host, port_number, dbfile)
-
+        print("SERVICE: " + service)
         # temp fix: if host wasn't scanned no port entry will exist so we are scanning if service returns NULL
         if service == "NULL":
-            nmap_scan(host, dbfile)
+            nmap_scan([host], dbfile)
             service = query_service_type(host, port_number, dbfile)
 
             #if service still returns null, return
-            if service == "NULL":
+            if service != "http" and service != "https":
                 print("Invalid protocol for dir scan.  Must be http/https.")
-                return
+                continue
+
+        if service != "http" and service != "https":
+            print("Invalid protocol for dir scan.  Must be http/https..." + service)
+            continue
 
         for wordlist in DIR_WORDLISTS:
             gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir", "-k",  "-u", service + "://" + host + ":" + port_number]
@@ -431,7 +436,7 @@ def webscan():
         curl_cmd = "curl http://127.0.0.1:5000/" + scantype + "/" + project + "/" + hosts
         p = subprocess.Popen(curl_cmd, shell=True, stdout=subprocess.PIPE)
 
-        return render_template("index.html")
+        return render_template("scaninit.html")
     else:
         return render_template("webscan.html")
 
@@ -457,6 +462,7 @@ def portscan(scantype, project, hostlist):
     conn.commit()
     conn.close()
 
+    hosts = []
     hosts = hostlist.split(",")
     print(f"Received Hosts: {hosts}")
 

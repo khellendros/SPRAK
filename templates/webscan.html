@@ -1,14 +1,19 @@
 {% extends "layout.html" %}
 
 {% block body %}
+<div class="jumbotron darkmode center">
+    <h1>Scan Portal</h1>
 <form action="/webscan" method="post">
     <div class="form-group">
+        <p style="text-align: left; color: white">Project Name</p>
         <input autocomplete="off" autofocus class="form-control" name="project" placeholder="HTB" type="text">
     </div>
     <div class="form-group">
+        <p style="text-align: left; color: white">Hosts</p>
         <input autocomplete="off" autofocus class="form-control" name="hosts" placeholder="10.11.1.1" type="text">
     </div>
     <div class="form-group">
+        <p style="text-align: center; color: white">Scan Type</p>
         <select name="scantype" id="symbol">  
             <option value="portscan">Port Scan</option>
             <option value="vhostscan">Vhost Scan</option>
@@ -18,4 +23,5 @@
     </div>
     <button class="btn btn-primary" type="submit">Scan</button>
 </form>
+</div>
 {% endblock %}
