@@ -48,11 +48,16 @@ def nmap_scan(hosts, dbfile):
     #fast UDP and TCP scan for open ports
     for host in hosts:
         
-        nmap_cmd = ["nmap", "-sS", "-T4", "-p", "-", "-oA", "static/logs/" + log_dir(dbfile) + host, host]
+        try:  
+            os.mkdir("static/logs/" + log_dir(dbfile) + host + "/")  
+        except OSError as error:  
+            print(error)
+
+        nmap_cmd = ["nmap", "-sS", "-T4", "-p", "-", "-oA", "static/logs/" + log_dir(dbfile) + host + "/" + host, host]
         print("Nmap Scan Phase 1: ", nmap_cmd)
         subprocess.run(nmap_cmd)
 
-        xmltree = ET.parse("static/logs/" + log_dir(dbfile) + host + ".xml")
+        xmltree = ET.parse("static/logs/" + log_dir(dbfile) + host + "/" + host + ".xml")
         xmlroot = xmltree.getroot()
 
         openports = []
@@ -64,12 +69,12 @@ def nmap_scan(hosts, dbfile):
         portarg = ",".join(openports)
         
         if len(openports) > 0:
-            nmap_cmd = ["nmap", "-sS", "-A", "-p", portarg, "-oA", "static/logs/" + log_dir(dbfile) + host, host]
+            nmap_cmd = ["nmap", "-sS", "-A", "-p", portarg, "-oA", "static/logs/" + log_dir(dbfile) + host + "/" + host, host]
             print("Nmap Scan Phase 2: ", nmap_cmd)
             subprocess.run(nmap_cmd)
 
         ### parse xml and insert into database ###
-        xmltree = ET.parse("static/logs/" + log_dir(dbfile) + host + ".xml")
+        xmltree = ET.parse("static/logs/" + log_dir(dbfile) + host + "/" + host + ".xml")
         xmlroot = xmltree.getroot()
 
         os_fingerprints = []
@@ -195,18 +200,23 @@ def vhost_scan(hosts, dbfile):
         else:
             port_number = "80"
 
+        try:  
+            os.mkdir("static/logs/" + log_dir(dbfile) + host + "/")  
+        except OSError as error:  
+            print(error)
+
         service = query_service_type(host, port_number, dbfile)
 
         if valid_ip(host) == False:
             gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" \
-                            + log_dir(dbfile) + host + ":" + port_number + ".vhost", "-u", service + "://" + host]
+                            + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "-u", service + "://" + host]
         else:
             gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/dummylist.txt", "-k", "-o", "static/logs/" \
-                            + log_dir(dbfile) + host + ":" + port_number + ".vhost", "-u", service + "://" + host]
+                            + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "-u", service + "://" + host]
 
         subprocess.run(gobuster_cmd)
 
-        with open("static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".vhost", "r") as vhostFile:
+        with open("static/logs/" + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "r") as vhostFile:
 
             row = sql_query_one("SELECT id FROM hosts WHERE host=?;", (host,), dbfile)
             
@@ -271,6 +281,11 @@ def dir_scan(hosts, dbfile):
         else:
             port_number = "80"
 
+        try:  
+            os.mkdir("static/logs/" + log_dir(dbfile) + host + "/")  
+        except OSError as error:  
+            print(error)
+
         service = query_service_type(host, port_number, dbfile)
         print("SERVICE: " + service)
         # temp fix: if host wasn't scanned no port entry will exist so we are scanning if service returns NULL
@@ -288,13 +303,13 @@ def dir_scan(hosts, dbfile):
             continue
 
         for wordlist in DIR_WORDLISTS:
-            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir", "-k",  "-u", service + "://" + host + ":" + port_number]
+            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + "/" +host + ":" + port_number + ".dir", "-k",  "-u", service + "://" + host + ":" + port_number]
             #dirb_cmd = ["dirb", service + "://" + host + ":" + port_number, wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir"]
             #dirb_cmd = ["dirb", service + "://" + host + ":" + port_number, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir"]
 
             subprocess.run(gobuster_cmd)
 
-            with open("static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir", "r") as dirFile:
+            with open("static/logs/" + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".dir", "r") as dirFile:
 
                 #query to check if this host is already a vhost so we don't create duplicates in both vhosts and hosts table
                 row = sql_query_one("SELECT id FROM vhosts WHERE vhost=?;", (host,), dbfile)
