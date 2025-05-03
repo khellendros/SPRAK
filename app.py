@@ -209,10 +209,10 @@ def vhost_scan(hosts, dbfile):
 
         if valid_ip(host) == False:
             gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" \
-                            + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "-u", service + "://" + host, "-b", "401", "--no-color"]
+                            + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "-u", service + "://" + host, "--no-color"]
         else:
             gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/dummylist.txt", "-k", "-o", "static/logs/" \
-                            + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "-u", service + "://" + host, "-b", "401", "--no-color"]
+                            + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "-u", service + "://" + host, "--no-color"]
 
         subprocess.run(gobuster_cmd)
 
