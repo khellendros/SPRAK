@@ -209,10 +209,10 @@ def vhost_scan(hosts, dbfile):
 
         if valid_ip(host) == False:
             gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/subdomains-top1million-110000.txt", "-k", "-o", "static/logs/" \
-                            + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "-u", service + "://" + host]
+                            + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "-u", service + "://" + host, "-b", "401", "--no-color"]
         else:
             gobuster_cmd = ["gobuster", "vhost", "-w", "wordlists/dummylist.txt", "-k", "-o", "static/logs/" \
-                            + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "-u", service + "://" + host]
+                            + log_dir(dbfile) + host + "/" + host + ":" + port_number + ".vhost", "-u", service + "://" + host, "-b", "401", "--no-color"]
 
         subprocess.run(gobuster_cmd)
 
@@ -303,7 +303,7 @@ def dir_scan(hosts, dbfile):
             continue
 
         for wordlist in DIR_WORDLISTS:
-            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + "/" +host + ":" + port_number + ".dir", "-k",  "-u", service + "://" + host + ":" + port_number]
+            gobuster_cmd = ["gobuster", "dir", "-w", wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + "/" +host + ":" + port_number + ".dir", "-k",  "-u", service + "://" + host + ":" + port_number, "-b", "401", "--no-color"]
             #dirb_cmd = ["dirb", service + "://" + host + ":" + port_number, wordlist, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir"]
             #dirb_cmd = ["dirb", service + "://" + host + ":" + port_number, "-o", "static/logs/" + log_dir(dbfile) + host + ":" + port_number + ".dir"]
 
